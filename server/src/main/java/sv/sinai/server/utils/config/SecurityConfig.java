@@ -38,7 +38,8 @@ public class SecurityConfig {
                     return config;
                 }))
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/**").authenticated() // Proteger todas las rutas de la API
+                        // Proteger todas las rutas de la API
+                        .requestMatchers("/api/users/**").authenticated()
                         .anyRequest().permitAll() // Permitir todas las demás solicitudes
                 )
                 .sessionManagement((sessionManager) -> sessionManager
