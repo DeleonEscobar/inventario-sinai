@@ -6,12 +6,17 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
-public class User {
+public class User implements UserDetails {
     @Id
     @Column(name = "Id", nullable = false)
     private Integer id;
@@ -42,6 +47,8 @@ public class User {
     @NotNull
     @Column(name = "Password", nullable = false)
     private String password;
+
+    // Getters and Setters ----------------------------------------------------------------------
 
     public Integer getId() {
         return id;
@@ -105,6 +112,39 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    // Sobrecarga de métodos para la autenticación con UserDetails ------------------------------------------------
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        if (role != null) {
+            return switch (role) {
+                case 1 -> List.of(new SimpleGrantedAuthority("MANAGER"));
+                case 2 -> List.of(new SimpleGrantedAuthority("KEEPER"));
+                default -> List.of(new SimpleGrantedAuthority("USER"));
+            };
+        }
+        return List.of();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 
 }
