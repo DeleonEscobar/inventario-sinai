@@ -13,8 +13,8 @@ SET FOREIGN_KEY_CHECKS = 1;
 
 -- Usuarios
 INSERT INTO `user` (`username`, `password`, `name`, `dui`, `role`, `createdAt`)
-VALUES ('admin', 'hashed_pass1', 'Juan Pérez', '01234567-8', 1, NOW()),
-       ('operator', 'hashed_pass2', 'Ana López', '87654321-0', 2, NOW());
+VALUES ('admin', '$2y$10$QnCebVSweHGhk6Qq.M04oufs2ha0lTBUAFEV6FIige3osI0mMoniq', 'Juan Pérez', '01234567-8', 1, NOW()),
+       ('operator', '$2y$10$mbruBSadRSEsW5Lw5TYKc.i5SRmWTsGsGQo7dCPj1w.UJZ4EYoH1.', 'Ana López', '87654321-0', 2, NOW());
 
 -- Almacenes
 INSERT INTO `warehouse` (`name`, `contactUserId`, `status`, `location`, `createdAt`)
