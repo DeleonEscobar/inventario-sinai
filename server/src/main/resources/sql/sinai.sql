@@ -1,73 +1,90 @@
-CREATE TABLE `Warehouse` (
-  `Id` int PRIMARY KEY AUTO_INCREMENT,
-  `Name` varchar(255),
-  `ContactUserId` int,
-  `Status` int,
-  `CreatedAt` timestamp DEFAULT null,
-  `UpdatedAt` timestamp DEFAULT null
+CREATE TABLE `warehouse`
+(
+    `id`            int PRIMARY KEY AUTO_INCREMENT,
+    `name`          varchar(255),
+    `contactUserId` int UNIQUE,
+    `status`        int,
+    `location`      varchar(255),
+    `createdAt`     timestamp DEFAULT null,
+    `updatedAt`     timestamp DEFAULT null
 );
 
-CREATE TABLE `User` (
-  `Id` int PRIMARY KEY AUTO_INCREMENT,
-  `Name` varchar(255),
-  `DUI` varchar(255),
-  `Role` int,
-  `CreatedAt` timestamp DEFAULT null,
-  `UpdatedAt` timestamp DEFAULT null
+CREATE TABLE `user`
+(
+    `id`        int PRIMARY KEY AUTO_INCREMENT,
+    `username`  varchar(255) UNIQUE,
+    `password`  varchar(255),
+    `name`      varchar(255),
+    `dui`       varchar(255) UNIQUE,
+    `role`      int,
+    `createdAt` timestamp DEFAULT null,
+    `updatedAt` timestamp DEFAULT null
 );
 
-CREATE TABLE `Product` (
-  `Id` int PRIMARY KEY AUTO_INCREMENT,
-  `Name` varchar(255),
-  `CreatedAt` timestamp DEFAULT null,
-  `UpdatedAt` timestamp DEFAULT null
+CREATE TABLE `product`
+(
+    `id`        int PRIMARY KEY AUTO_INCREMENT,
+    `name`      varchar(255),
+    `createdAt` timestamp DEFAULT null,
+    `updatedAt` timestamp DEFAULT null
 );
 
-CREATE TABLE `Batch` (
-  `Id` int PRIMARY KEY AUTO_INCREMENT,
-  `ProductId` int,
-  `Amount` integer,
-  `Date` datetime,
-  `SerialNumber` varchar(255),
-  `Price` decimal(6,2),
-  `CreatedAt` timestamp DEFAULT null,
-  `UpdatedAt` timestamp DEFAULT null
+CREATE TABLE `batch`
+(
+    `id`             int PRIMARY KEY AUTO_INCREMENT,
+    `productId`      int,
+    `amount`         int,
+    `expirationDate` datetime  DEFAULT null,
+    `serialNumber`   varchar(255),
+    `price`          decimal(6, 2),
+    `createdAt`      timestamp DEFAULT null,
+    `updatedAt`      timestamp DEFAULT null
 );
 
-CREATE TABLE `Client` (
-  `Id` int PRIMARY KEY AUTO_INCREMENT,
-  `Name` varchar(255),
-  `CreatedAt` timestamp DEFAULT null,
-  `UpdatedAt` timestamp DEFAULT null
+CREATE TABLE `client`
+(
+    `id`        int PRIMARY KEY AUTO_INCREMENT,
+    `name`      varchar(255),
+    `address`   varchar(255),
+    `createdAt` timestamp DEFAULT null,
+    `updatedAt` timestamp DEFAULT null
 );
 
-CREATE TABLE `Movement` (
-  `Id` int PRIMARY KEY AUTO_INCREMENT,
-  `Notes` text,
-  `Type` int,
-  `Status` int,
-  `ClientId` int,
-  `ResponsibleUserId` int,
-  `CreatedAt` timestamp DEFAULT null,
-  `UpdatedAt` timestamp DEFAULT null
+CREATE TABLE `movement`
+(
+    `id`                int PRIMARY KEY AUTO_INCREMENT,
+    `notes`             text,
+    `type`              int,
+    `status`            int,
+    `clientId`          int,
+    `responsibleUserId` int,
+    `createdAt`         timestamp DEFAULT null,
+    `updatedAt`         timestamp DEFAULT null
 );
 
-CREATE TABLE `MovementBatch` (
-  `Id` int PRIMARY KEY AUTO_INCREMENT,
-  `MovementId` int,
-  `BatchId` int,
-  `CreatedAt` timestamp DEFAULT null,
-  `UpdatedAt` timestamp DEFAULT null
+CREATE TABLE `movementBatch`
+(
+    `id`         int PRIMARY KEY AUTO_INCREMENT,
+    `movementId` int,
+    `batchId`    int,
+    `createdAt`  timestamp DEFAULT null,
+    `updatedAt`  timestamp DEFAULT null
 );
 
-ALTER TABLE `Warehouse` ADD FOREIGN KEY (`ContactUserId`) REFERENCES `User` (`Id`);
+ALTER TABLE `warehouse`
+    ADD FOREIGN KEY (`contactUserId`) REFERENCES `user` (`id`);
 
-ALTER TABLE `Batch` ADD FOREIGN KEY (`ProductId`) REFERENCES `Product` (`Id`);
+ALTER TABLE `batch`
+    ADD FOREIGN KEY (`productId`) REFERENCES `product` (`id`);
 
-ALTER TABLE `Movement` ADD FOREIGN KEY (`ClientId`) REFERENCES `Client` (`Id`);
+ALTER TABLE `movement`
+    ADD FOREIGN KEY (`clientId`) REFERENCES `client` (`id`);
 
-ALTER TABLE `Movement` ADD FOREIGN KEY (`ResponsibleUserId`) REFERENCES `User` (`Id`);
+ALTER TABLE `movement`
+    ADD FOREIGN KEY (`responsibleUserId`) REFERENCES `user` (`id`);
 
-ALTER TABLE `MovementBatch` ADD FOREIGN KEY (`MovementId`) REFERENCES `Movement` (`Id`);
+ALTER TABLE `movementBatch`
+    ADD FOREIGN KEY (`movementId`) REFERENCES `movement` (`id`);
 
-ALTER TABLE `MovementBatch` ADD FOREIGN KEY (`BatchId`) REFERENCES `Batch` (`Id`);
+ALTER TABLE `movementBatch`
+    ADD FOREIGN KEY (`batchId`) REFERENCES `batch` (`id`);
