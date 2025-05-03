@@ -11,6 +11,6 @@ import java.util.Optional;
 @Repository
 public interface IWarehouseRepository extends JpaRepository<Warehouse, Integer> {
     Optional<Warehouse> findByName(String name);
-    Optional<List<Warehouse>> findAllByContactUser(User user);
+    Optional<Warehouse> findByContactUser(User user);
     Optional<List<Warehouse>> findAllByStatus(Integer status);
 }
