@@ -35,9 +35,8 @@ public class MovementController {
     @GetMapping("/type/{type}")
     public ResponseEntity<List<MovementDTO>> getMovementsByType(@PathVariable String type) {
         Integer typeId = switch (type.toLowerCase()) {
-            case "request" -> 1;
-            case "inbound" -> 2;
-            case "shipping" -> 3;
+            case "inbound" -> 1;
+            case "shipping" -> 2;
             default -> throw new ResourceNotFoundException("Movement type '" + type + "' not found");
         };
         return ResponseEntity.ok(movementService.getMovementsByType(typeId)
