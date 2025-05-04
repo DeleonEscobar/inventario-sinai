@@ -11,8 +11,8 @@ import java.util.Optional;
 
 @Repository
 public interface IMovementRepository extends JpaRepository<Movement, Integer> {
-    Optional<List<Movement>> findAllByType(Integer type);
-    Optional<List<Movement>> findAllByClient(Client client);
-    Optional<List<Movement>> findAllByStatus(Integer status);
-    Optional<List<Movement>> findAllByResponsibleUser(User user);
+    List<Movement> findAllByType(Integer type);
+    List<Movement> findAllByClientId(Integer clientId);
+    List<Movement> findAllByStatus(Integer status);
+    List<Movement> findAllByResponsibleUserId(Integer userId);
 }

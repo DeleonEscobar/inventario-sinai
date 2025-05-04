@@ -12,6 +12,6 @@ public interface IMovementBatchRepository extends JpaRepository<MovementBatch, I
     Optional<List<MovementBatch>> findAllByMovementId(Integer movementId);
     Optional<List<MovementBatch>> findAllByBatchId(Integer batchId);
     Optional<MovementBatch> findByBatchId(Integer batchId);
-    Optional<MovementBatch> findByMovementId(Integer movementId);
+    Optional<List<MovementBatch>> findByMovementId(Integer movementId);
     Optional<List<MovementBatch>> findAllByBatchIdAndMovementId(Integer batchId, Integer movementId);
 }
