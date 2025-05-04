@@ -37,13 +37,15 @@ public class DTOConverter {
         );
     }
 
-    public MovementDTO movementToDTO(Movement movement, UserDTO user, List<Batch> batches) {
+    public MovementDTO movementToDTO(Movement movement, UserDTO responsibleUser, UserDTO createdByUser, List<Batch> batches) {
         return new MovementDTO(
                 movement.getId(),
                 movement.getNotes(),
                 movement.getType(),
                 movement.getStatus(),
-                user,
+                movement.getClient(),
+                responsibleUser,
+                createdByUser,
                 movement.getCreatedAt(),
                 movement.getUpdatedAt(),
                 batches

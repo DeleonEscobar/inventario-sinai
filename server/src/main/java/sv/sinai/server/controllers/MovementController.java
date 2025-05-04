@@ -8,21 +8,26 @@ import sv.sinai.server.entities.Client;
 import sv.sinai.server.entities.Movement;
 import sv.sinai.server.entities.beans.MovementRequest;
 import sv.sinai.server.entities.dto.MovementDTO;
+import sv.sinai.server.entities.dto.UserDTO;
 import sv.sinai.server.services.MovementService;
+import sv.sinai.server.services.UserService;
 import sv.sinai.server.utils.exceptions.ResourceNotFoundException;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/movements") // http://localhost:8080/api/movements
 public class MovementController {
     private final MovementService movementService;
+    private final UserService userService;
 
     @Autowired
-    public MovementController(MovementService movementService) {
+    public MovementController(MovementService movementService, UserService userService) {
         this.movementService = movementService;
+        this.userService = userService;
     }
 
     // Get all movements
@@ -80,12 +85,26 @@ public class MovementController {
     // Create movement
     @PostMapping
     public ResponseEntity<Movement> createMovement(@Valid @RequestBody MovementRequest movementRequest) {
+        UserDTO responsibleUser = userService.getUserById(movementRequest.getResponsibleUser().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Responsible user with id '" + movementRequest.getResponsibleUser().getId() + "' not found"));
+        UserDTO createdByUser = userService.getUserById(movementRequest.getCreatedByUser().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Created by user with id '" + movementRequest.getCreatedByUser().getId() + "' not found"));
+
+        if (Objects.equals(responsibleUser.getId(), createdByUser.getId())) {
+            throw new ResourceNotFoundException("Responsible user and created by user cannot be the same");
+        }
+
+        if (createdByUser.getRole() != 1 || responsibleUser.getRole() != 2) {
+            throw new ResourceNotFoundException("Created by user must be a manager and responsible user must be a warehouse keeper");
+        }
+
         Movement movement = new Movement();
         movement.setNotes(movementRequest.getNotes());
         movement.setType(movementRequest.getType());
         movement.setStatus(movementRequest.getStatus());
         movement.setClient(movementRequest.getClient());
-        movement.setResponsibleUser(movementRequest.getUser());
+        movement.setResponsibleUser(movementRequest.getResponsibleUser());
+        movement.setCreatedByUser(movementRequest.getCreatedByUser());
         movement.setCreatedAt(movementRequest.getCreatedAt());
 
         return ResponseEntity.ok(movementService.createMovement(movement, movementRequest.getBatches()));

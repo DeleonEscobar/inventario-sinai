@@ -23,19 +23,23 @@ public class MovementRequest {
     private Client client;
 
     @NotNull
-    private User user;
+    private User responsibleUser;
+
+    @NotNull
+    private User createdByUser;
 
     private Instant createdAt;
 
     @NotNull
     private List<Integer> batches;
 
-    public MovementRequest(String notes, Integer type, Integer status, Client client, User user, Instant createdAt, List<Integer> batches) {
+    public MovementRequest(String notes, Integer type, Integer status, Client client, User responsibleUser, User createdByUser, Instant createdAt, List<Integer> batches) {
         this.notes = notes;
         this.type = type;
         this.status = status;
-        this.user = user;
         this.client = client;
+        this.responsibleUser = responsibleUser;
+        this.createdByUser = createdByUser;
         this.createdAt = createdAt;
         this.batches = batches;
     }
@@ -72,12 +76,20 @@ public class MovementRequest {
         this.client = client;
     }
 
-    public User getUser() {
-        return user;
+    public User getResponsibleUser() {
+        return responsibleUser;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setResponsibleUser(User responsibleUser) {
+        this.responsibleUser = responsibleUser;
+    }
+
+    public User getCreatedByUser() {
+        return createdByUser;
+    }
+
+    public void setCreatedByUser(User createdByUser) {
+        this.createdByUser = createdByUser;
     }
 
     public Instant getCreatedAt() {

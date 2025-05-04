@@ -1,6 +1,7 @@
 package sv.sinai.server.entities.dto;
 
 import sv.sinai.server.entities.Batch;
+import sv.sinai.server.entities.Client;
 
 import java.time.Instant;
 import java.util.List;
@@ -10,17 +11,21 @@ public class MovementDTO {
     private String name;
     private Integer type;
     private Integer status;
-    private UserDTO user;
+    private Client client;
+    private UserDTO responsibleUser;
+    private UserDTO createdByUser;
     private Instant createdAt;
     private Instant updatedAt;
     private List<Batch> batches;
 
-    public MovementDTO(Integer id, String name, Integer type, Integer status, UserDTO user, Instant createdAt, Instant updatedAt, List<Batch> batches) {
+    public MovementDTO(Integer id, String name, Integer type, Integer status, Client client, UserDTO responsibleUser, UserDTO createdByUser, Instant createdAt, Instant updatedAt, List<Batch> batches) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.status = status;
-        this.user = user;
+        this.client = client;
+        this.responsibleUser = responsibleUser;
+        this.createdByUser = createdByUser;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.batches = batches;
@@ -58,12 +63,28 @@ public class MovementDTO {
         this.status = status;
     }
 
-    public UserDTO getUser() {
-        return user;
+    public Client getClient() {
+        return client;
     }
 
-    public void setUser(UserDTO user) {
-        this.user = user;
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public UserDTO getResponsibleUser() {
+        return responsibleUser;
+    }
+
+    public void setResponsibleUser(UserDTO responsibleUser) {
+        this.responsibleUser = responsibleUser;
+    }
+
+    public UserDTO getCreatedByUser() {
+        return createdByUser;
+    }
+
+    public void setCreatedByUser(UserDTO createdByUser) {
+        this.createdByUser = createdByUser;
     }
 
     public Instant getCreatedAt() {

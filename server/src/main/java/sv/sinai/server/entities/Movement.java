@@ -36,6 +36,11 @@ public class Movement {
     @JoinColumn(name = "responsibleUserId")
     private User responsibleUser;
 
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "createdByUserId")
+    private User createdByUser;
+
     @Column(name = "createdAt")
     private Instant createdAt;
 
@@ -88,6 +93,14 @@ public class Movement {
 
     public void setResponsibleUser(User responsibleUser) {
         this.responsibleUser = responsibleUser;
+    }
+
+    public User getCreatedByUser() {
+        return createdByUser;
+    }
+
+    public void setCreatedByUser(User createdByUser) {
+        this.createdByUser = createdByUser;
     }
 
     public Instant getCreatedAt() {

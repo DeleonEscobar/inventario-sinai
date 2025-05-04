@@ -119,8 +119,9 @@ public class MovementService {
                 .map(MovementBatch::getBatch)
                 .collect(Collectors.toList());
 
-        UserDTO userDTO = dtoConverter.userToDTO(movement.getResponsibleUser());
+        UserDTO responsibleUserDTO = dtoConverter.userToDTO(movement.getResponsibleUser());
+        UserDTO createdByUserDTO = dtoConverter.userToDTO(movement.getCreatedByUser());
 
-        return dtoConverter.movementToDTO(movement, userDTO, batches);
+        return dtoConverter.movementToDTO(movement, responsibleUserDTO, createdByUserDTO, batches);
     }
 }
