@@ -24,10 +24,10 @@ public class Client {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "createdAt")
+    @Column(name = "createdAt", insertable = false, updatable = false)
     private Instant createdAt;
 
-    @Column(name = "updatedAt")
+    @Column(name = "updatedAt", insertable = false, updatable = false)
     private Instant updatedAt;
 
     public Integer getId() {

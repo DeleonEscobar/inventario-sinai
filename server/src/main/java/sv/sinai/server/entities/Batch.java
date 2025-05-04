@@ -37,10 +37,10 @@ public class Batch {
     @Column(name = "price", precision = 6, scale = 2)
     private BigDecimal price;
 
-    @Column(name = "createdAt")
+    @Column(name = "createdAt", insertable = false, updatable = false)
     private Instant createdAt;
 
-    @Column(name = "updatedAt")
+    @Column(name = "updatedAt", insertable = false, updatable = false)
     private Instant updatedAt;
 
     public Integer getId() {

@@ -41,10 +41,10 @@ public class Movement {
     @JoinColumn(name = "createdByUserId")
     private User createdByUser;
 
-    @Column(name = "createdAt")
+    @Column(name = "createdAt", insertable = false, updatable = false)
     private Instant createdAt;
 
-    @Column(name = "updatedAt")
+    @Column(name = "updatedAt", insertable = false, updatable = false)
     private Instant updatedAt;
 
     public Integer getId() {

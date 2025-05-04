@@ -23,10 +23,10 @@ public class MovementBatch {
     @JoinColumn(name = "batchId")
     private Batch batch;
 
-    @Column(name = "createdAt")
+    @Column(name = "createdAt", insertable = false, updatable = false)
     private Instant createdAt;
 
-    @Column(name = "updatedAt")
+    @Column(name = "updatedAt", insertable = false, updatable = false)
     private Instant updatedAt;
 
     public Integer getId() {

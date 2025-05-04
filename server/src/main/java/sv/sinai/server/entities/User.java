@@ -43,10 +43,10 @@ public class User implements UserDetails {
     @Column(name = "role")
     private Integer role;
 
-    @Column(name = "createdAt")
+    @Column(name = "createdAt", insertable = false, updatable = false)
     private Instant createdAt;
 
-    @Column(name = "updatedAt")
+    @Column(name = "updatedAt", insertable = false, updatable = false)
     private Instant updatedAt;
 
     public Integer getId() {
