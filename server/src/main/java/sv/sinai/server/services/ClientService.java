@@ -43,6 +43,7 @@ public class ClientService {
         return clientRepository.findById(id)
                 .map(client -> {
                     client.setName(clientDetails.getName());
+                    client.setAddress(clientDetails.getAddress());
                     client.setUpdatedAt(Instant.now());
                     return clientRepository.save(client);
                 });
