@@ -2,57 +2,84 @@ package sv.sinai.server.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sv.sinai.server.entities.Client;
-import sv.sinai.server.entities.Movement;
-import sv.sinai.server.entities.User;
+import sv.sinai.server.entities.*;
+import sv.sinai.server.entities.dto.MovementDTO;
+import sv.sinai.server.entities.dto.UserDTO;
+import sv.sinai.server.repositories.IMovementBatchRepository;
 import sv.sinai.server.repositories.IMovementRepository;
+import sv.sinai.server.services.extra.DTOConverter;
 
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MovementService {
     private final IMovementRepository movementRepository;
+    private final IMovementBatchRepository movementBatchRepository;
+    private final DTOConverter dtoConverter;
 
     @Autowired
-    public MovementService(IMovementRepository movementRepository) {
+    public MovementService(IMovementRepository movementRepository, IMovementBatchRepository movementBatchRepository, DTOConverter dtoConverter) {
         this.movementRepository = movementRepository;
+        this.movementBatchRepository = movementBatchRepository;
+        this.dtoConverter = dtoConverter;
     }
 
     // Get all movements
-    public List<Movement> getAllMovements() {
-        return movementRepository.findAll();
+    public List<MovementDTO> getAllMovements() {
+        List<Movement> movements = movementRepository.findAll();
+        return movements.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
     // Get all movements by type
-    public Optional<List<Movement>> getMovementsByType(Integer type) {
-        return movementRepository.findAllByType(type);
+    public Optional<List<MovementDTO>> getMovementsByType(Integer type) {
+        List<Movement> movements = movementRepository.findAllByType(type);
+        return appendBatches(movements);
     }
 
     // Get all movements by client
-    public Optional<List<Movement>> getMovementsByClient(Client client) {
-        return movementRepository.findAllByClient(client);
+    public Optional<List<MovementDTO>> getMovementsByClient(Integer clientId) {
+        List<Movement> movements = movementRepository.findAllByClientId(clientId);
+        return appendBatches(movements);
     }
 
     // Get all movements by status
-    public Optional<List<Movement>> getMovementsByStatus(Integer status) {
-        return movementRepository.findAllByStatus(status);
+    public Optional<List<MovementDTO>> getMovementsByStatus(Integer status) {
+        List<Movement> movements = movementRepository.findAllByStatus(status);
+        return appendBatches(movements);
     }
 
     // Get all movements by responsible user
-    public Optional<List<Movement>> getMovementsByResponsibleUser(User user) {
-        return movementRepository.findAllByResponsibleUser(user);
+    public Optional<List<MovementDTO>> getMovementsByResponsibleUser(Integer userId) {
+        List<Movement> movements = movementRepository.findAllByResponsibleUserId(userId);
+        return appendBatches(movements);
     }
 
     // Get movement by id
-    public Optional<Movement> getMovementById(Integer id) {
-        return movementRepository.findById(id);
+    public Optional<MovementDTO> getMovementById(Integer id) {
+        return movementRepository.findById(id).map(this::convertToDTO);
     }
 
     // Create movement
-    public Movement createMovement(Movement movement) {
-        return movementRepository.save(movement);
+    public Movement createMovement(Movement movement, List<Integer> batches) {
+        Movement savedMovement = movementRepository.save(movement);
+
+        // Crear el registro de lotes pertenecientes al movimiento
+        for (Integer batchId : batches) {
+            MovementBatch movementBatch = new MovementBatch();
+            movementBatch.setMovement(savedMovement);
+
+            Batch batch = new Batch();
+            batch.setId(batchId);
+            movementBatch.setBatch(batch);
+
+            movementBatchRepository.save(movementBatch);
+        }
+        return savedMovement;
     }
 
     // Update movement
@@ -71,6 +98,29 @@ public class MovementService {
 
     // Delete movement
     public void deleteMovement(Integer id) {
+        // Primero eliminamos los lotes asociados al movimiento
+        List<MovementBatch> movementBatches = movementBatchRepository.findByMovementId(id).orElseThrow();
+        movementBatchRepository.deleteAll(movementBatches);
+        // Luego eliminamos el movimiento
         movementRepository.deleteById(id);
+    }
+
+    // Metodos auxiliares para establecer las relaciones entre movimientos y lotes
+    private Optional<List<MovementDTO>> appendBatches(List<Movement> movements) {
+        List<MovementDTO> movementDTOs = movements.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+        return Optional.of(movementDTOs);
+    }
+
+    private MovementDTO convertToDTO(Movement movement) {
+        List<MovementBatch> movementBatches = movementBatchRepository.findByMovementId(movement.getId()).orElseThrow();
+        List<Batch> batches = movementBatches.stream()
+                .map(MovementBatch::getBatch)
+                .collect(Collectors.toList());
+
+        UserDTO userDTO = dtoConverter.userToDTO(movement.getResponsibleUser());
+
+        return dtoConverter.movementToDTO(movement, userDTO, batches);
     }
 }
