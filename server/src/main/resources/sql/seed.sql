@@ -1,16 +1,3 @@
--- Primero limpiamos las tablas para evitar conflictos si ya hay datos
-SET FOREIGN_KEY_CHECKS = 0;
-
-TRUNCATE TABLE movementBatch;
-TRUNCATE TABLE movement;
-TRUNCATE TABLE batch;
-TRUNCATE TABLE product;
-TRUNCATE TABLE warehouse;
-TRUNCATE TABLE client;
-TRUNCATE TABLE user;
-
-SET FOREIGN_KEY_CHECKS = 1;
-
 -- Usuarios
 INSERT INTO `user` (`username`, `password`, `name`, `dui`, `role`, `createdAt`)
 VALUES ('admin', '$2y$10$QnCebVSweHGhk6Qq.M04oufs2ha0lTBUAFEV6FIige3osI0mMoniq', 'Juan Pérez', '01234567-8', 1, NOW()),
@@ -36,9 +23,9 @@ VALUES ('Clínica Vida', 'Santa Tecla', NOW()),
        ('Hospital San Juan', 'Soyapango', NOW());
 
 -- Movimientos
-INSERT INTO `movement` (`notes`, `type`, `status`, `clientId`, `responsibleUserId`, `createdAt`)
-VALUES ('Entrega inicial de productos', 1, 1, 1, 2, NOW()),
-       ('Reposición de stock', 1, 1, 2, 2, NOW());
+INSERT INTO `movement` (`notes`, `type`, `status`, `clientId`, `createdByUserId`, `responsibleUserId`, `createdAt`)
+VALUES ('Entrega inicial de productos', 1, 1, 1, 1, 2, NOW()),
+       ('Reposición de stock', 1, 1, 2, 1, 2, NOW());
 
 -- Movimientos - Lotes
 INSERT INTO `movementBatch` (`movementId`, `batchId`, `createdAt`)
