@@ -1,6 +1,7 @@
 package sv.sinai.server.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.Instant;
 
@@ -8,24 +9,30 @@ import java.time.Instant;
 @Table(name = "movement")
 public class Movement {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
+    @NotNull
     @Lob
     @Column(name = "notes")
     private String notes;
 
+    @NotNull
     @Column(name = "type")
     private Integer type;
 
+    @NotNull
     @Column(name = "status")
     private Integer status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "clientId")
     private Client client;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "responsibleUserId")
     private User responsibleUser;
 

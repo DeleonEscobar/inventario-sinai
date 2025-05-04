@@ -1,9 +1,7 @@
 package sv.sinai.server.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.Instant;
@@ -12,13 +10,16 @@ import java.time.Instant;
 @Table(name = "client")
 public class Client {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
+    @NotNull
     @Size(max = 255)
     @Column(name = "name")
     private String name;
 
+    @NotNull
     @Size(max = 255)
     @Column(name = "address")
     private String address;

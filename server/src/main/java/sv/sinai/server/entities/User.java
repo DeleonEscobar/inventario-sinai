@@ -1,6 +1,7 @@
 package sv.sinai.server.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,22 +19,27 @@ public class User implements UserDetails {
     @Column(name = "id", nullable = false)
     private Integer id;
 
+    @NotNull
     @Size(max = 255)
     @Column(name = "username")
     private String username;
 
+    @NotNull
     @Size(max = 255)
     @Column(name = "password")
     private String password;
 
+    @NotNull
     @Size(max = 255)
     @Column(name = "name")
     private String name;
 
+    @NotNull
     @Size(max = 255)
     @Column(name = "dui")
     private String dui;
 
+    @NotNull
     @Column(name = "role")
     private Integer role;
 

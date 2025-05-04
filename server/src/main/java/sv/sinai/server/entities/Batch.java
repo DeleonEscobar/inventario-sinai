@@ -1,6 +1,7 @@
 package sv.sinai.server.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
@@ -14,20 +15,25 @@ public class Batch {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "productId")
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @JoinColumn(name = "productId", nullable = false)
     private Product product;
 
+    @NotNull
     @Column(name = "amount")
     private Integer amount;
 
+    @NotNull
     @Column(name = "expirationDate")
     private Instant expirationDate;
 
+    @NotNull
     @Size(max = 255)
     @Column(name = "serialNumber")
     private String serialNumber;
 
+    @NotNull
     @Column(name = "price", precision = 6, scale = 2)
     private BigDecimal price;
 

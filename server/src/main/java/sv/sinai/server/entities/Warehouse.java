@@ -1,6 +1,7 @@
 package sv.sinai.server.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.Instant;
@@ -9,20 +10,25 @@ import java.time.Instant;
 @Table(name = "warehouse")
 public class Warehouse {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
+    @NotNull
     @Size(max = 255)
     @Column(name = "name")
     private String name;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @NotNull
+    @OneToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "contactUserId")
     private User contactUser;
 
+    @NotNull
     @Column(name = "status")
     private Integer status;
 
+    @NotNull
     @Size(max = 255)
     @Column(name = "location")
     private String location;
