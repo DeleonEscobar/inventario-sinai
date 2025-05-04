@@ -50,7 +50,7 @@ public class BatchService {
                     batch.setSerialNumber(batchDetails.getSerialNumber());
                     batch.setProduct(batchDetails.getProduct());
                     batch.setAmount(batchDetails.getAmount());
-                    batch.setDate(batchDetails.getDate());
+                    batch.setExpirationDate(batchDetails.getExpirationDate());
                     batch.setSerialNumber(batchDetails.getSerialNumber());
                     batch.setPrice(batchDetails.getPrice());
                     batch.setUpdatedAt(Instant.now());
