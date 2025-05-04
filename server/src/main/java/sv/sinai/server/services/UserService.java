@@ -94,7 +94,6 @@ public class UserService {
     // Create user
     public UserDTO createUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setCreatedAt(Instant.now());
         userRepository.save(user);
         return new UserDTO(
                 userRepository.save(user).getId(),
@@ -114,7 +113,6 @@ public class UserService {
                     user.setName(userDetails.getName());
                     user.setDui(userDetails.getDui());
                     user.setRole(userDetails.getRole());
-                    user.setUpdatedAt(Instant.now());
                     return userRepository.save(user);
                 })
                 .map(updatedUser -> new UserDTO(

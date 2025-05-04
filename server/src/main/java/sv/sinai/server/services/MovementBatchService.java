@@ -39,7 +39,6 @@ public class MovementBatchService {
                 .map(movementBatch -> {
                     movementBatch.setMovement(movementBatchDetails.getMovement());
                     movementBatch.setBatch(movementBatchDetails.getBatch());
-                    movementBatch.setUpdatedAt(Instant.now());
                     return movementBatchRepository.save(movementBatch);
                 });
     }

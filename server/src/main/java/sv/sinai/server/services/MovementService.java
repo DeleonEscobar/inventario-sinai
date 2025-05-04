@@ -91,7 +91,6 @@ public class MovementService {
                     movement.setStatus(movementDetails.getStatus());
                     movement.setClient(movementDetails.getClient());
                     movement.setResponsibleUser(movementDetails.getResponsibleUser());
-                    movement.setUpdatedAt(Instant.now());
                     return movementRepository.save(movement);
                 });
     }

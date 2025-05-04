@@ -66,7 +66,6 @@ public class WarehouseService {
                     warehouse.setName(warehouseDetails.getName());
                     warehouse.setContactUser(warehouseDetails.getContactUser());
                     warehouse.setStatus(warehouseDetails.getStatus());
-                    warehouse.setUpdatedAt(warehouseDetails.getUpdatedAt());
                     return warehouseRepository.save(warehouse);
                 });
     }

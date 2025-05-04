@@ -43,7 +43,6 @@ public class ProductService {
         return productRepository.findById(id)
                 .map(product -> {
                     product.setName(productDetails.getName());
-                    product.setUpdatedAt(Instant.now());
                     return productRepository.save(product);
                 });
     }

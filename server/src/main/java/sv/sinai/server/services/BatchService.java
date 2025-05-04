@@ -53,7 +53,6 @@ public class BatchService {
                     batch.setExpirationDate(batchDetails.getExpirationDate());
                     batch.setSerialNumber(batchDetails.getSerialNumber());
                     batch.setPrice(batchDetails.getPrice());
-                    batch.setUpdatedAt(Instant.now());
                     return batchRepository.save(batch);
                 });
     }
