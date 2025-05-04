@@ -7,6 +7,7 @@ import sv.sinai.server.entities.User;
 import sv.sinai.server.entities.dto.UserDTO;
 import sv.sinai.server.repositories.IUserRepository;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -91,22 +92,39 @@ public class UserService {
     }
 
     // Create user
-    public User createUser(User user) {
+    public UserDTO createUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        user.setCreatedAt(Instant.now());
+        userRepository.save(user);
+        return new UserDTO(
+                userRepository.save(user).getId(),
+                user.getUsername(),
+                user.getName(),
+                user.getDui(),
+                user.getRole(),
+                user.getCreatedAt(),
+                user.getUpdatedAt());
     }
 
     // Update user
-    public Optional<User> updateUser(Integer id, User userDetails) {
+    public Optional<UserDTO> updateUser(Integer id, User userDetails) {
         return userRepository.findById(id)
                 .map(user -> {
                     user.setUsername(userDetails.getUsername());
                     user.setName(userDetails.getName());
                     user.setDui(userDetails.getDui());
                     user.setRole(userDetails.getRole());
-                    user.setPassword(passwordEncoder.encode(userDetails.getPassword()));
+                    user.setUpdatedAt(Instant.now());
                     return userRepository.save(user);
-                });
+                })
+                .map(updatedUser -> new UserDTO(
+                        updatedUser.getId(),
+                        updatedUser.getUsername(),
+                        updatedUser.getName(),
+                        updatedUser.getDui(),
+                        updatedUser.getRole(),
+                        updatedUser.getCreatedAt(),
+                        updatedUser.getUpdatedAt()));
     }
 
     // Delete user
