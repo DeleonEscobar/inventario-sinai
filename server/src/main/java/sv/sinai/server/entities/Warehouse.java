@@ -9,24 +9,28 @@ import java.time.Instant;
 @Table(name = "warehouse")
 public class Warehouse {
     @Id
-    @Column(name = "Id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Integer id;
 
     @Size(max = 255)
-    @Column(name = "Name")
+    @Column(name = "name")
     private String name;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ContactUserId")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "contactUserId")
     private User contactUser;
 
-    @Column(name = "Status")
+    @Column(name = "status")
     private Integer status;
 
-    @Column(name = "CreatedAt")
+    @Size(max = 255)
+    @Column(name = "location")
+    private String location;
+
+    @Column(name = "createdAt")
     private Instant createdAt;
 
-    @Column(name = "UpdatedAt")
+    @Column(name = "updatedAt")
     private Instant updatedAt;
 
     public Integer getId() {
@@ -59,6 +63,14 @@ public class Warehouse {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public Instant getCreatedAt() {

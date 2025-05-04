@@ -12,17 +12,17 @@ import java.time.Instant;
 @Table(name = "product")
 public class Product {
     @Id
-    @Column(name = "Id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Integer id;
 
     @Size(max = 255)
-    @Column(name = "Name")
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "CreatedAt")
+    @Column(name = "createdAt")
     private Instant createdAt;
 
-    @Column(name = "UpdatedAt")
+    @Column(name = "updatedAt")
     private Instant updatedAt;
 
     public Integer getId() {

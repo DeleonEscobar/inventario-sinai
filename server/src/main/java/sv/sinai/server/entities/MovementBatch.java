@@ -8,22 +8,21 @@ import java.time.Instant;
 @Table(name = "movementbatch")
 public class MovementBatch {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MovementId")
+    @JoinColumn(name = "movementId")
     private Movement movement;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "BatchId")
+    @JoinColumn(name = "batchId")
     private Batch batch;
 
-    @Column(name = "CreatedAt")
+    @Column(name = "createdAt")
     private Instant createdAt;
 
-    @Column(name = "UpdatedAt")
+    @Column(name = "updatedAt")
     private Instant updatedAt;
 
     public Integer getId() {

@@ -11,30 +11,30 @@ import java.time.Instant;
 public class Batch {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "Id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Integer id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ProductId")
+    @JoinColumn(name = "productId")
     private Product product;
 
-    @Column(name = "Amount")
+    @Column(name = "amount")
     private Integer amount;
 
-    @Column(name = "Date")
-    private Instant date;
+    @Column(name = "expirationDate")
+    private Instant expirationDate;
 
     @Size(max = 255)
-    @Column(name = "SerialNumber")
+    @Column(name = "serialNumber")
     private String serialNumber;
 
-    @Column(name = "Price", precision = 6, scale = 2)
+    @Column(name = "price", precision = 6, scale = 2)
     private BigDecimal price;
 
-    @Column(name = "CreatedAt")
+    @Column(name = "createdAt")
     private Instant createdAt;
 
-    @Column(name = "UpdatedAt")
+    @Column(name = "updatedAt")
     private Instant updatedAt;
 
     public Integer getId() {
@@ -61,12 +61,12 @@ public class Batch {
         this.amount = amount;
     }
 
-    public Instant getDate() {
-        return date;
+    public Instant getExpirationDate() {
+        return expirationDate;
     }
 
-    public void setDate(Instant date) {
-        this.date = date;
+    public void setExpirationDate(Instant expirationDate) {
+        this.expirationDate = expirationDate;
     }
 
     public String getSerialNumber() {

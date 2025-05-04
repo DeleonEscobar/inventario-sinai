@@ -8,31 +8,31 @@ import java.time.Instant;
 @Table(name = "movement")
 public class Movement {
     @Id
-    @Column(name = "Id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Integer id;
 
     @Lob
-    @Column(name = "Notes")
+    @Column(name = "notes")
     private String notes;
 
-    @Column(name = "Type")
+    @Column(name = "type")
     private Integer type;
 
-    @Column(name = "Status")
+    @Column(name = "status")
     private Integer status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ClientId")
+    @JoinColumn(name = "clientId")
     private Client client;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ResponsibleUserId")
+    @JoinColumn(name = "responsibleUserId")
     private User responsibleUser;
 
-    @Column(name = "CreatedAt")
+    @Column(name = "createdAt")
     private Instant createdAt;
 
-    @Column(name = "UpdatedAt")
+    @Column(name = "updatedAt")
     private Instant updatedAt;
 
     public Integer getId() {

@@ -12,17 +12,21 @@ import java.time.Instant;
 @Table(name = "client")
 public class Client {
     @Id
-    @Column(name = "Id", nullable = false)
+    @Column(name = "id", nullable = false)
     private Integer id;
 
     @Size(max = 255)
-    @Column(name = "Name")
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "CreatedAt")
+    @Size(max = 255)
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "createdAt")
     private Instant createdAt;
 
-    @Column(name = "UpdatedAt")
+    @Column(name = "updatedAt")
     private Instant updatedAt;
 
     public Integer getId() {
@@ -39,6 +43,14 @@ public class Client {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public Instant getCreatedAt() {

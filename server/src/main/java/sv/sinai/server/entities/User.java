@@ -1,10 +1,6 @@
 package sv.sinai.server.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,37 +14,34 @@ import java.util.List;
 @Table(name = "user")
 public class User implements UserDetails {
     @Id
-    @Column(name = "Id", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Integer id;
 
     @Size(max = 255)
-    @Column(name = "Name")
-    private String name;
-
-    @Size(max = 255)
-    @Column(name = "DUI")
-    private String dui;
-
-    @Column(name = "Role")
-    private Integer role;
-
-    @Column(name = "CreatedAt")
-    private Instant createdAt;
-
-    @Column(name = "UpdatedAt")
-    private Instant updatedAt;
-
-    @Size(max = 50)
-    @NotNull
-    @Column(name = "Username", nullable = false, length = 50)
+    @Column(name = "username")
     private String username;
 
     @Size(max = 255)
-    @NotNull
-    @Column(name = "Password", nullable = false)
+    @Column(name = "password")
     private String password;
 
-    // Getters and Setters ----------------------------------------------------------------------
+    @Size(max = 255)
+    @Column(name = "name")
+    private String name;
+
+    @Size(max = 255)
+    @Column(name = "dui")
+    private String dui;
+
+    @Column(name = "role")
+    private Integer role;
+
+    @Column(name = "createdAt")
+    private Instant createdAt;
+
+    @Column(name = "updatedAt")
+    private Instant updatedAt;
 
     public Integer getId() {
         return id;
@@ -56,6 +49,22 @@ public class User implements UserDetails {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getName() {
@@ -98,22 +107,6 @@ public class User implements UserDetails {
         this.updatedAt = updatedAt;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     // Sobrecarga de métodos para la autenticación con UserDetails ------------------------------------------------
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -146,5 +139,4 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
 }
