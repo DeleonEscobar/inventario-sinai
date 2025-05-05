@@ -1,6 +1,8 @@
 package sv.sinai.server.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import sv.sinai.server.entities.MovementBatch;
 
@@ -14,4 +16,13 @@ public interface IMovementBatchRepository extends JpaRepository<MovementBatch, I
     Optional<MovementBatch> findByBatchId(Integer batchId);
     Optional<List<MovementBatch>> findByMovementId(Integer movementId);
     Optional<List<MovementBatch>> findAllByBatchIdAndMovementId(Integer batchId, Integer movementId);
+
+    @Query("""
+        SELECT mb
+        FROM MovementBatch mb
+        JOIN FETCH mb.batch b
+        JOIN FETCH b.product p
+        WHERE mb.movement.id = :movementId
+    """)
+    Optional<List<MovementBatch>> findAllByMovementIdWithDetails(@Param("movementId") Integer movementId);
 }
