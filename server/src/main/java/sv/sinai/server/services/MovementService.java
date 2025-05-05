@@ -5,10 +5,14 @@ import org.springframework.stereotype.Service;
 import sv.sinai.server.entities.*;
 import sv.sinai.server.entities.dto.MovementDTO;
 import sv.sinai.server.entities.dto.UserDTO;
+import sv.sinai.server.entities.dto.reports.BatchReportDTO;
+import sv.sinai.server.entities.dto.reports.MovementReportDTO;
 import sv.sinai.server.repositories.IMovementBatchRepository;
 import sv.sinai.server.repositories.IMovementRepository;
 import sv.sinai.server.services.extra.DTOConverter;
+import sv.sinai.server.utils.exceptions.ResourceNotFoundException;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
@@ -122,5 +126,51 @@ public class MovementService {
         UserDTO createdByUserDTO = dtoConverter.userToDTO(movement.getCreatedByUser());
 
         return dtoConverter.movementToDTO(movement, responsibleUserDTO, createdByUserDTO, batches);
+    }
+
+    // ---- Apartado de reportes ----
+    // Generar un reporte para un movimiento específico por su ID
+    public MovementReportDTO getMovementReportById(Integer id) {
+        // Obtenemos el movimiento por su ID
+        Movement mov = movementRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Movement not found with id: " + id));
+
+        // Obtenemos los lotes asociados al movimiento y con ello sus productos
+        List<MovementBatch> movBat = movementBatchRepository.findAllByMovementIdWithDetails(id)
+                .orElseThrow(() -> new ResourceNotFoundException("MovementBatch not found with id: " + id));
+
+        // Creamos el DTO del movimiento
+        MovementReportDTO report = new MovementReportDTO();
+        List<BatchReportDTO> batches = movBat.stream().map(mb -> {
+            Batch b = mb.getBatch();
+            return new BatchReportDTO(
+                    b.getProduct().getName(),
+                    b.getAmount(),
+                    b.getPrice(),
+                    b.getExpirationDate(),
+                    b.getSerialNumber(),
+                    b.getPrice().multiply(BigDecimal.valueOf(b.getAmount()))
+            );
+        }).toList();
+
+        report.setCreatedAt(mov.getCreatedAt());
+        report.setNotes(mov.getNotes());
+        report.setStatus(switch (mov.getStatus()) {
+            case 1 -> "Solicitado";
+            case 2 -> "Completado";
+            case 3 -> "Cancelado";
+            default -> "Desconocido";
+        });
+        report.setType(mov.getType() == 1 ? "Entrada" : "Salida");
+        report.setClientName(mov.getClient().getName());
+        report.setClientAddress(mov.getClient().getAddress());
+        report.setSupervisorName(mov.getCreatedByUser().getName());
+        report.setResponsibleName(mov.getResponsibleUser().getName());
+        report.setBatches(batches);
+        report.setTotalAmount(batches.stream()
+                .map(BatchReportDTO::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+
+        return report;
     }
 }
