@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport
+        xmlns="http://jasperreports.sourceforge.net/jasperreports"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+          http://jasperreports.sourceforge.net/jasperreports
+          http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+        name="movements_report"
+        language="groovy"
+        pageWidth="595" pageHeight="842"
+        columnWidth="555"
+        leftMargin="20" rightMargin="20"
+        topMargin="20" bottomMargin="20"
+        uuid="a1b2c3d4-e5f6-7890-abcd-ef1234567890">
+
+    <!-- Definición de estilos -->
+    <style name="Title" fontName="Arial" fontSize="20" isBold="true" isUnderline="false" pdfFontName="Helvetica-Bold"/>
+    <style name="Subtitle" fontName="Arial" fontSize="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+    <style name="ColumnHeader" fontName="Arial" fontSize="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+    <style name="DetailRow" fontName="Arial" fontSize="9" pdfFontName="Helvetica"/>
+    <style name="Total" fontName="Arial" fontSize="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+
+    <!-- Parámetros para mostrar datos de cabecera -->
+    <parameter name="CREATED_AT" class="java.time.Instant"/>
+    <parameter name="NOTES" class="java.lang.String"/>
+    <parameter name="STATUS" class="java.lang.String"/>
+    <parameter name="TYPE" class="java.lang.String"/>
+    <parameter name="CLIENT" class="java.lang.String"/>
+    <parameter name="CLIENT_ADDRESS" class="java.lang.String"/>
+    <parameter name="SUPERVISOR" class="java.lang.String"/>
+    <parameter name="RESPONSIBLE" class="java.lang.String"/>
+    <parameter name="TOTAL_AMOUNT" class="java.math.BigDecimal"/>
+    <parameter name="LOGO" class="java.io.InputStream"/>
+
+    <!-- Campos de cada batch -->
+    <field name="productName" class="java.lang.String"/>
+    <field name="quantity" class="java.lang.Integer"/>
+    <field name="price" class="java.math.BigDecimal"/>
+    <field name="expirationDate" class="java.time.Instant"/>
+    <field name="serialNumber" class="java.lang.String"/>
+    <field name="amount" class="java.math.BigDecimal"/>
+
+    <background>
+        <band height="802" splitType="Stretch">
+            <!-- Fondo sutilmente coloreado para las páginas -->
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="802" backcolor="#F8F8F8" mode="Opaque"/>
+                <graphicElement>
+                    <pen lineWidth="0"/>
+                </graphicElement>
+            </rectangle>
+        </band>
+    </background>
+
+    <title>
+        <band height="220" splitType="Stretch">
+            <!-- Encabezado con logo -->
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="50" backcolor="#2C3E50" forecolor="#2C3E50"/>
+            </rectangle>
+
+            <staticText>
+                <reportElement x="10" y="10" width="400" height="30" forecolor="#FFFFFF" style="Title"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="22" isBold="true"/>
+                </textElement>
+                <text><![CDATA[REPORTE DE MOVIMIENTO]]></text>
+            </staticText>
+
+            <image>
+                <reportElement x="465" y="5" width="80" height="40">
+                    <printWhenExpression><![CDATA[$P{LOGO} != null]]></printWhenExpression>
+                </reportElement>
+                <imageExpression><![CDATA[$P{LOGO}]]></imageExpression>
+            </image>
+
+            <!-- Información principal en caja destacada -->
+            <rectangle>
+                <reportElement x="0" y="60" width="555" height="100" backcolor="#FFFFFF"/>
+                <graphicElement>
+                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                </graphicElement>
+            </rectangle>
+
+            <!-- Columna izquierda -->
+            <staticText>
+                <reportElement x="10" y="65" width="80" height="15" style="Subtitle"/>
+                <text><![CDATA[Fecha:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="90" y="65" width="180" height="15" style="DetailRow"/>
+                <textFieldExpression><![CDATA[
+                  $P{CREATED_AT} != null ?
+                    ( new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm") {{
+                          setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+                      }} )
+                      .format(java.util.Date.from($P{CREATED_AT}))
+                  : "N/A"
+                ]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="10" y="85" width="80" height="15" style="Subtitle"/>
+                <text><![CDATA[Estado:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="90" y="85" width="180" height="15" style="DetailRow"/>
+                <textFieldExpression><![CDATA[$P{STATUS}]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="10" y="105" width="80" height="15" style="Subtitle"/>
+                <text><![CDATA[Tipo:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="90" y="105" width="180" height="15" style="DetailRow"/>
+                <textFieldExpression><![CDATA[$P{TYPE}]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="10" y="125" width="80" height="15" style="Subtitle"/>
+                <text><![CDATA[Cliente:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="90" y="125" width="180" height="15" style="DetailRow"/>
+                <textFieldExpression><![CDATA[$P{CLIENT}]]></textFieldExpression>
+            </textField>
+
+            <!-- Columna derecha -->
+            <staticText>
+                <reportElement x="280" y="65" width="100" height="15" style="Subtitle"/>
+                <text><![CDATA[Dirección:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="380" y="65" width="170" height="15" style="DetailRow"/>
+                <textFieldExpression><![CDATA[$P{CLIENT_ADDRESS}]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="280" y="85" width="100" height="15" style="Subtitle"/>
+                <text><![CDATA[Supervisor:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="380" y="85" width="170" height="15" style="DetailRow"/>
+                <textFieldExpression><![CDATA[$P{SUPERVISOR}]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="280" y="105" width="100" height="15" style="Subtitle"/>
+                <text><![CDATA[Responsable:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="380" y="105" width="170" height="15" style="DetailRow"/>
+                <textFieldExpression><![CDATA[$P{RESPONSIBLE}]]></textFieldExpression>
+            </textField>
+
+            <!-- Sección para las notas -->
+            <rectangle>
+                <reportElement x="0" y="170" width="555" height="40" backcolor="#FFFFFF"/>
+                <graphicElement>
+                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                </graphicElement>
+            </rectangle>
+
+            <staticText>
+                <reportElement x="10" y="170" width="80" height="15" style="Subtitle"/>
+                <text><![CDATA[Notas:]]></text>
+            </staticText>
+            <textField isBlankWhenNull="true" textAdjust="StretchHeight">
+                <reportElement x="10" y="190" width="535" height="20" style="DetailRow"/>
+                <textElement verticalAlignment="Top">
+                    <paragraph lineSpacing="1_1_2"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{NOTES}]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+
+    <pageHeader>
+        <band height="30">
+            <staticText>
+                <reportElement x="0" y="10" width="555" height="20" style="Subtitle"/>
+                <textElement>
+                    <font size="14"/>
+                </textElement>
+                <text><![CDATA[Detalle de Productos]]></text>
+            </staticText>
+            <line>
+                <reportElement x="0" y="29" width="555" height="1"/>
+                <graphicElement>
+                    <pen lineWidth="1.0" lineStyle="Solid" lineColor="#CCCCCC"/>
+                </graphicElement>
+            </line>
+        </band>
+    </pageHeader>
+
+    <columnHeader>
+        <!-- Etiquetas para la tabla de batches -->
+        <band height="25">
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="25" backcolor="#E9ECEF"/>
+                <graphicElement>
+                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                </graphicElement>
+            </rectangle>
+
+            <staticText>
+                <reportElement x="0" y="0" width="140" height="25" style="ColumnHeader"/>
+                <textElement verticalAlignment="Middle">
+                    <paragraph leftIndent="5"/>
+                </textElement>
+                <text><![CDATA[Producto]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="140" y="0" width="70" height="25" style="ColumnHeader"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <text><![CDATA[Cantidad]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="210" y="0" width="80" height="25" style="ColumnHeader"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <text><![CDATA[Precio]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="290" y="0" width="90" height="25" style="ColumnHeader"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <text><![CDATA[Expiración]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="380" y="0" width="100" height="25" style="ColumnHeader"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <text><![CDATA[Serial]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="480" y="0" width="75" height="25" style="ColumnHeader"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <paragraph rightIndent="5"/>
+                </textElement>
+                <text><![CDATA[Monto]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <detail>
+        <band height="25" splitType="Stretch">
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="25" backcolor="#FFFFFF">
+                    <printWhenExpression><![CDATA[$V{REPORT_COUNT} % 2 == 0]]></printWhenExpression>
+                </reportElement>
+                <graphicElement>
+                    <pen lineWidth="0.5" lineColor="#F2F2F2"/>
+                </graphicElement>
+            </rectangle>
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="25" backcolor="#FAFAFA">
+                    <printWhenExpression><![CDATA[$V{REPORT_COUNT} % 2 != 0]]></printWhenExpression>
+                </reportElement>
+                <graphicElement>
+                    <pen lineWidth="0.5" lineColor="#F2F2F2"/>
+                </graphicElement>
+            </rectangle>
+
+            <textField textAdjust="StretchHeight">
+                <reportElement x="0" y="0" width="140" height="25" style="DetailRow"/>
+                <textElement verticalAlignment="Middle">
+                    <paragraph leftIndent="5"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{productName}]]></textFieldExpression>
+            </textField>
+
+            <textField>
+                <reportElement x="140" y="0" width="70" height="25" style="DetailRow"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
+            </textField>
+
+            <textField pattern="#,##0.00">
+                <reportElement x="210" y="0" width="80" height="25" style="DetailRow"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
+            </textField>
+
+            <textField>
+                <reportElement x="290" y="0" width="90" height="25" style="DetailRow"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{expirationDate} != null ?
+                    new java.text.SimpleDateFormat("dd/MM/yyyy").format(java.util.Date.from($F{expirationDate})) :
+                    "N/A"]]></textFieldExpression>
+            </textField>
+
+            <textField textAdjust="StretchHeight">
+                <reportElement x="380" y="0" width="100" height="25" style="DetailRow"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{serialNumber}]]></textFieldExpression>
+            </textField>
+
+            <textField pattern="#,##0.00">
+                <reportElement x="480" y="0" width="75" height="25" style="DetailRow"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <paragraph rightIndent="5"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+    <columnFooter>
+        <band height="0">
+        </band>
+    </columnFooter>
+
+    <pageFooter>
+        <band height="30">
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="30" backcolor="#F8F8F8"/>
+                <graphicElement>
+                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                </graphicElement>
+            </rectangle>
+
+            <textField>
+                <reportElement x="0" y="0" width="555" height="30" style="DetailRow"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression>
+                    <![CDATA["Página " + $V{PAGE_NUMBER} + " de " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageFooter>
+
+    <summary>
+        <band height="70">
+            <line>
+                <reportElement x="0" y="0" width="555" height="1"/>
+                <graphicElement>
+                    <pen lineWidth="1.0" lineStyle="Solid" lineColor="#CCCCCC"/>
+                </graphicElement>
+            </line>
+
+            <rectangle>
+                <reportElement x="355" y="10" width="200" height="30" backcolor="#2C3E50"/>
+                <graphicElement>
+                    <pen lineWidth="0"/>
+                </graphicElement>
+            </rectangle>
+
+            <staticText>
+                <reportElement x="365" y="10" width="100" height="30" forecolor="#FFFFFF" style="Total"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <text><![CDATA[TOTAL:]]></text>
+            </staticText>
+
+            <textField pattern="#,##0.00">
+                <reportElement x="465" y="10" width="80" height="30" forecolor="#FFFFFF" style="Total"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <paragraph rightIndent="10"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{TOTAL_AMOUNT}]]></textFieldExpression>
+            </textField>
+
+            <line>
+                <reportElement x="0" y="50" width="555" height="1"/>
+                <graphicElement>
+                    <pen lineWidth="1.0" lineStyle="Solid" lineColor="#CCCCCC"/>
+                </graphicElement>
+            </line>
+
+            <textField>
+                <reportElement x="0" y="55" width="555" height="15" style="DetailRow"/>
+                <textElement textAlignment="Center">
+                    <font size="8" isItalic="true"/>
+                </textElement>
+                <textFieldExpression>
+                    <![CDATA["Documento generado el " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date())]]></textFieldExpression>
+            </textField>
+        </band>
+    </summary>
+</jasperReport>
