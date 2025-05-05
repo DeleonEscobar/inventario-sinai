@@ -43,6 +43,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/clients/**").authenticated()
                         .requestMatchers("/api/movements/**").authenticated()
                         .requestMatchers("/api/products/**").authenticated()
+                        .requestMatchers("/api/reports/**").authenticated()
                         .requestMatchers("/api/users/**").authenticated()
                         .requestMatchers("/api/warehouses/**").authenticated()
                         .anyRequest().permitAll() // Permitir todas las demás solicitudes
