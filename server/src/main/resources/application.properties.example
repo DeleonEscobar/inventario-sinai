@@ -1,0 +1,19 @@
+spring.application.name=server
+server.port=8081
+
+# Database connection
+spring.datasource.url=
+spring.datasource.username=
+spring.datasource.password=
+
+# Hibernate config
+spring.jpa.hibernate.ddl-auto=
+spring.jpa.show-sql=
+spring.jpa.properties.hibernate.dialect=
+spring.jpa.properties.hibernate.format_sql=
+spring.jpa.hibernate.naming.physical-strategy=
+spring.jackson.serialization.fail-on-empty-beans=
+
+# JWT params
+jwt.secret=
+jwt.expiration=
