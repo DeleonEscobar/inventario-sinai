@@ -34,6 +34,7 @@ public class SecurityConfig {
                         .requestMatchers("/","/login", "/css/**", "/js/**", "/img/**", "/main.css").permitAll() // Permitir acceso a las rutas de login y recursos
                         .requestMatchers("/dashboard/admin/**").hasAuthority("ACCESS_ADMIN")
                         .requestMatchers("/dashboard/products/**").hasAuthority("ACCESS_ADMIN")
+                        .requestMatchers("/dashboard/batches/**").hasAuthority("ACCESS_ADMIN")
                         .anyRequest().authenticated() // Requerir autenticación para cualquier otra ruta
                 )
                 .formLogin(AbstractHttpConfigurer::disable)

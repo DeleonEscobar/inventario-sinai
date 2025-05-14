@@ -9,25 +9,18 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.client.RestTemplate;
 import sv.sinai.client.models.User;
-import sv.sinai.client.controllers.BaseController;
 
 @Controller
 @RequestMapping("/dashboard")
-public class ProductsController extends BaseController {
-
-    private final RestTemplate restTemplate;
+public class BatchesController extends BaseController {
 
     @Value("${api.baseURL}")
     private String BASE_URL;
 
-    public ProductsController(RestTemplate restTemplate) {
+    public BatchesController(RestTemplate restTemplate) {
         super(restTemplate);
-        this.restTemplate = restTemplate;
     }
 
     @Override
@@ -36,12 +29,12 @@ public class ProductsController extends BaseController {
         model.addAttribute("route", "admin");
     }
 
-    @GetMapping("admin/products")
+    @GetMapping("admin/batches")
     @PreAuthorize("hasAuthority('ACCESS_ADMIN')")
-    public String products(HttpSession session, Model model) {
+    public String batches(HttpSession session, Model model) {
         User user = getSessionUser(session);
         model.addAttribute("user", user);
-        return "dashboard/products";
+        return "dashboard/batches";
     }
 
 }

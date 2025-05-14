@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layoutDashboard.html}">
+<head>
+    <title>Lotes | Inventario Pan Sinai</title>
+    <script src="/js/batch.js" type="module"></script>
+</head>
+<body>
+<div class="w-full md:p-6 md:pt-16" layout:fragment="custom-content">
+    <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold">Gestión de Lotes</h2>
+        <button id="btn-add-batch" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition">Agregar Lote</button>
+    </div>
+    <div class="overflow-x-auto bg-white rounded-lg border border-slate-300">
+        <table class="min-w-full divide-y divide-slate-200">
+            <thead class="bg-slate-100">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Serial</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Producto</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Cantidad</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Precio</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Vence</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Creado</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Actualizado</th>
+                    <th class="px-6 py-3 text-center text-xs font-medium text-slate-700 uppercase">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="batches-table-body" class="divide-y divide-slate-200">
+                <!-- Lotes se cargan dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal para agregar/editar lote -->
+    <div id="batch-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40 hidden">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
+            <button id="close-modal" class="absolute top-2 right-2 text-slate-400 hover:text-slate-700 text-2xl">&times;</button>
+            <h3 id="modal-title" class="text-xl font-bold mb-4">Agregar Lote</h3>
+            <form id="batch-form" class="space-y-4">
+                <input type="hidden" id="batch-id">
+                <div>
+                    <label for="batch-serial" class="block text-sm font-medium text-slate-700">Serial</label>
+                    <input type="text" id="batch-serial" class="mt-1 block w-full border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                </div>
+                <div>
+                    <label for="batch-product" class="block text-sm font-medium text-slate-700">Producto</label>
+                    <select id="batch-product" class="mt-1 block w-full border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" required></select>
+                </div>
+                <div>
+                    <label for="batch-amount" class="block text-sm font-medium text-slate-700">Cantidad</label>
+                    <input type="number" id="batch-amount" class="mt-1 block w-full border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" required min="1">
+                </div>
+                <div>
+                    <label for="batch-price" class="block text-sm font-medium text-slate-700">Precio</label>
+                    <input type="number" step="0.01" id="batch-price" class="mt-1 block w-full border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" required min="0">
+                </div>
+                <div>
+                    <label for="batch-expiration" class="block text-sm font-medium text-slate-700">Fecha de Vencimiento</label>
+                    <input type="date" id="batch-expiration" class="mt-1 block w-full border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                </div>
+                <div class="flex justify-end gap-2 mt-4">
+                    <button type="button" id="cancel-modal" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded">Cancelar</button>
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

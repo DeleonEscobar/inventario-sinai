@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Controller
 @RequestMapping("/dashboard")
-public class AdminDashboarController {
+public class AdminDashboarController extends BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
     private final RestTemplate restTemplate;
@@ -28,9 +28,11 @@ public class AdminDashboarController {
     private String BASE_URL;
 
     public AdminDashboarController(RestTemplate restTemplate) {
+        super(restTemplate);
         this.restTemplate = restTemplate;
     }
 
+    @Override
     @ModelAttribute
     public void commonAttributes(Model model) {
         model.addAttribute("route", "admin");
@@ -39,7 +41,7 @@ public class AdminDashboarController {
     @GetMapping("/admin/index")
     @PreAuthorize("hasAuthority('ACCESS_ADMIN')")
     public String adminDashboard(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("user");
+        User user = getSessionUser(session);
         model.addAttribute("user", user);
         return "dashboard/index";
     }
@@ -49,7 +51,7 @@ public class AdminDashboarController {
     @ResponseBody
     @PreAuthorize("hasAuthority('ACCESS_ADMIN')")
     public ResponseEntity<Map> getAvailableProducts(HttpSession session) {
-        String token = (String) session.getAttribute("token");
+        String token = getSessionToken(session);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
         HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -66,7 +68,7 @@ public class AdminDashboarController {
     @ResponseBody
     @PreAuthorize("hasAuthority('ACCESS_ADMIN')")
     public ResponseEntity<Map> getPendingMovements(HttpSession session) {
-        String token = (String) session.getAttribute("token");
+        String token = getSessionToken(session);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
         HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -83,7 +85,7 @@ public class AdminDashboarController {
     @ResponseBody
     @PreAuthorize("hasAuthority('ACCESS_ADMIN')")
     public ResponseEntity<Map> getRecentActivities(HttpSession session) {
-        String token = (String) session.getAttribute("token");
+        String token = getSessionToken(session);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
         HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -100,7 +102,7 @@ public class AdminDashboarController {
     @ResponseBody
     @PreAuthorize("hasAuthority('ACCESS_ADMIN')")
     public ResponseEntity<Map> getExpiringBatches(HttpSession session) {
-        String token = (String) session.getAttribute("token");
+        String token = getSessionToken(session);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
         HttpEntity<String> entity = new HttpEntity<>(headers);
@@ -116,7 +118,7 @@ public class AdminDashboarController {
     @GetMapping("/api/token")
     @ResponseBody
     public Map<String, String> getToken(HttpSession session) {
-        String token = (String) session.getAttribute("token");
+        String token = getSessionToken(session);
         return Map.of("token", token);
     }
 }

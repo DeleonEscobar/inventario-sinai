@@ -1,4 +1,5 @@
 import { getTokenRequest } from '/js/utils/getTokenRequest.js';
+import { formatDate } from '/js/utils/formatDate.js';
 
 // Variables globales
 const apiEndpoint = 'http://localhost:8081/api/products';
@@ -12,9 +13,6 @@ const productForm = document.getElementById('product-form');
 
 const inputId = document.getElementById('product-id');
 const inputName = document.getElementById('product-name');
-const inputDescription = document.getElementById('product-description');
-const inputPrice = document.getElementById('product-price');
-const inputStock = document.getElementById('product-stock');
 
 let editing = false;
 
@@ -26,9 +24,6 @@ function openModal(edit = false, product = null) {
         modalTitle.textContent = 'Editar Producto';
         inputId.value = product.id;
         inputName.value = product.name;
-        inputDescription.value = product.description;
-        inputPrice.value = product.price;
-        inputStock.value = product.stock;
     } else {
         modalTitle.textContent = 'Agregar Producto';
         productForm.reset();
@@ -55,14 +50,14 @@ window.addEventListener('click', (e) => {
 // Función principal para cargar productos
 async function fetchProducts() {
     try {
-        tableBody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-slate-400">Cargando...</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="2" class="text-center py-6 text-slate-400">Cargando...</td></tr>';
 
         // Obtener token de autenticación
         let userToken = await getTokenRequest();
 
         if (!userToken) {
             console.error('No se pudo obtener el token');
-            tableBody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-red-500">Error de autenticación</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="2" class="text-center py-6 text-red-500">Error de autenticación</td></tr>';
             return;
         }
 
@@ -83,14 +78,14 @@ async function fetchProducts() {
         renderProducts(products);
     } catch (err) {
         console.error('Error al cargar productos:', err);
-        tableBody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-red-500">Error al cargar productos</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="2" class="text-center py-6 text-red-500">Error al cargar productos</td></tr>';
     }
 }
 
 // Función para renderizar la tabla de productos
 function renderProducts(products) {
     if (!products || !products.length) {
-        tableBody.innerHTML = '<tr><td colspan="5" class="text-center py-6 text-slate-400">No hay productos registrados</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-slate-400">No hay productos registrados</td></tr>';
         return;
     }
 
@@ -99,9 +94,8 @@ function renderProducts(products) {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td class="px-6 py-4">${product.name}</td>
-            <td class="px-6 py-4">${product.description}</td>
-            <td class="px-6 py-4">$${Number(product.price).toFixed(2)}</td>
-            <td class="px-6 py-4">${product.stock}</td>
+            <td class="px-6 py-4">${formatDate(product.createdAt)}</td>
+            <td class="px-6 py-4">${formatDate(product.updatedAt)}</td>
             <td class="px-6 py-4 text-center">
                 <button class="edit-btn text-blue-600 hover:underline mr-2" data-id="${product.id}">Editar</button>
                 <button class="delete-btn text-red-600 hover:underline" data-id="${product.id}">Eliminar</button>
@@ -146,6 +140,7 @@ async function assignButtonEvents() {
                 const product = await res.json();
                 openModal(true, product);
             } catch (err) {
+                console.log(err);
                 console.error('Error al obtener detalles del producto:', err);
                 alert('No se pudo cargar la información del producto');
             }
@@ -197,9 +192,6 @@ productForm.addEventListener('submit', async (e) => {
         const id = inputId.value;
         const product = {
             name: inputName.value,
-            description: inputDescription.value,
-            price: parseFloat(inputPrice.value),
-            stock: parseInt(inputStock.value)
         };
 
         // Obtener token de autenticación
@@ -238,6 +230,7 @@ productForm.addEventListener('submit', async (e) => {
         closeModal();
         fetchProducts();
     } catch (err) {
+        console.log(err);
         console.error('Error al guardar el producto:', err);
         alert('Error al guardar el producto');
     }

@@ -31,10 +31,11 @@
     <div class="sidebar w-full lg:w-60 min-h-screen bg-[#FF5733] lg:rounded-r-2xl hidden lg:flex flex-col justify-between">
         <div class="">
             <div class="w-full p-4 flex gap-1 items-center my-2">
-                <div>
+                <a th:href="@{${user.role.id == 1 ? '/dashboard/admin/index' : '/dashboard/employee/index'}}" 
+                class="">
                     <h1 class="font-bold text-xl uppercase text-white leading-none">Sinaí</h1>
                     <h2 class="font-bold text-xl uppercase text-slate-200 leading-none">Inventario</h2>
-                </div>
+                </a>
             </div>
 
         </div>
