@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layoutDashboard.html}">
+<head>
+    <title>Dashboard Inventario Pan Sinai</title>
+
+</head>
+<body>
+    <div class="w-full md:p-6 md:pt-2" layout:fragment="custom-content">
+        <div>
+            <div class="pr-6 pb-4 mb-4">
+                <h3 class="text-2xl font-bold">Control de Inventario Pan Sinaí</h3>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-5 gap-8 w-full">
+            <div class="xl:col-span-3">
+                <!-- RESUMEN DE INVENTARIO -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-8">
+                    <!-- Productos en Inventario -->
+                    <div class="bg-blue-600/20 p-6 md:p-8 rounded-lg text-center">
+                        <div class="flex items-center justify-center gap-4">
+                            <div class="">
+                                <p class="text-4xl lg:text-5xl font-bold" id="available-products">0</p>
+                                <p class="mt-2 font-bold text-sm lg:text-base">Productos Disponibles</p>
+                                <p class="text-gray-600 text-xs">Total de unidades en stock</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Movimientos Pendientes -->
+                    <div class="bg-yellow-500/20 p-6 md:p-8 rounded-lg text-center">
+                        <div class="flex items-center justify-center gap-4">
+                            <div class="">
+                                <div class="text-4xl lg:text-5xl font-bold" id="pending-movements">0</div>
+                                <p class="mt-2 font-bold text-sm lg:text-base">Movimientos Pendientes</p>
+                                <p class="text-gray-600 text-xs">Entregas programadas</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Historial de Actividades -->
+                <div class="w-full">
+                    <div class="flex flex-col h-full">
+                        <h3 class="text-xl lg:text-2xl font-bold mb-1">Historial de Actividades</h3>
+                        <p class="text-gray-500 pb-4 text-sm">Movimientos recientes en el inventario</p>
+                        <div class="bg-white flex-grow p-6 rounded-lg border border-slate-500">
+                            <div class="relative pt-4 pb-5 max-h-[26rem] overflow-hidden overflow-y-auto">
+                                <ul class="p-4" id="activities-list">
+                                    <!-- Lista de actividades se cargará dinámicamente -->
+                                </ul>
+                            </div>
+                            <div class="text-center p-2 mt-2">
+                                <p class="text-slate-400 text-xs">Espere para ver más acciones realizadas por usted o sus empleados</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lotes próximos a vencer -->
+            <div class="xl:col-span-2 w-full">
+                <div class="flex flex-col h-full flex-grow w-full">
+                    <h3 class="text-xl lg:text-2xl font-bold mb-1">Lotes próximos a vencer</h3>
+                    <p class="text-gray-500 pb-4 text-sm">Productos que requieren atención</p>
+
+                    <div class="bg-white flex flex-col flex-grow gap-3 p-4 rounded-lg border border-slate-500" id="batches-expiring-soon">
+                        <!-- Lista de lotes próximos a vencer se cargará dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sección de Acceso Rápido -->
+        <div class="mt-8">
+            <h3 class="text-xl lg:text-2xl font-bold mb-4">Acceso Rápido</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Gestión de Productos -->
+                <div class="bg-blue-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
+                    <div class="flex flex-col items-center">
+                        <h4 class="font-bold text-center">Gestionar Productos</h4>
+                    </div>
+                </div>
+                
+                <!-- Gestión de Lotes -->
+                <div class="bg-green-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
+                    <div class="flex flex-col items-center">
+                        <h4 class="font-bold text-center">Gestionar Lotes</h4>
+                    </div>
+                </div>
+                
+                <!-- Movimientos -->
+                <div class="bg-purple-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
+                    <div class="flex flex-col items-center">
+                        <h4 class="font-bold text-center">Registrar Movimientos</h4>
+                    </div>
+                </div>
+                
+                <!-- Clientes -->
+                <div class="bg-orange-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
+                    <div class="flex flex-col items-center">
+                        <h4 class="font-bold text-center">Gestionar Clientes</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

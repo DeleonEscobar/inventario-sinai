@@ -1,6 +1,8 @@
 package sv.sinai.client.controllers;
 
 import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sv.sinai.client.models.User;
 
 import org.springframework.http.HttpEntity;
@@ -9,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Collections;
@@ -29,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 public class LoginController {
+    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     // Inyección de dependencias ===============================================
     @Autowired
@@ -43,23 +47,23 @@ public class LoginController {
 
     // Métodos =================================================================
     @GetMapping("/login")
-    public  String loginForm(HttpSession session){
-        
-        User user = (User) session.getAttribute("user");
+    public String loginForm(HttpSession session, Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if(user != null){
-            // Verificar si el usuario tiene una sesión activa
-            switch (user.getRole().getDisplayName().toUpperCase()) {
-                case "ADMIN":
-                    return "redirect:/dashboard/admin/index";
-                case "EMPLEADO":
-                    return "redirect:/dashboard/employee/index";
-                default:
-                    return "redirect:/dashboard";
-            }
+        if (authentication != null && authentication.isAuthenticated()
+                && authentication.getPrincipal() instanceof User) {
+
+            User user = (User) authentication.getPrincipal();
+            // Si el usuario ya está autenticado, redirigir según su rol
+            // Redirigir según el rol
+            return switch (user.getRole().getDisplayName().toUpperCase()) {
+                case "ADMIN" -> "redirect:/dashboard/admin/index";
+                case "EMPLOYEE" -> "redirect:/dashboard/employee/index";
+                default -> "redirect:/dashboard";
+            };
         }
 
-        // Si no hay una sesión presente, mostrar formulario de login
+        // Si no hay sesión, mostrar la página de login
         return "auth/login";
     }
 
@@ -67,8 +71,8 @@ public class LoginController {
      * POST request para autenticar al usuario
      * @param username El nombre de usuario del usuario
      * @param password La contraseña del usuario
-     * @param session El objeto de sesión
-     * @param model El objeto de modelo
+     * @param session  El objeto de sesión
+     * @param model    El objeto de modelo
      * @return La URL de redirección basada en el rol del usuario
      */
     @PostMapping("/login")
@@ -104,9 +108,9 @@ public class LoginController {
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
                         user,
                         null,
-                        Collections.singletonList(() -> "ROLE_" + user.getRole().getDisplayName())
+                        Collections.singletonList(() -> "ACCESS_" + user.getRole().getDisplayName().toUpperCase())
                 );
-                
+
                 // Establecer el contexto de seguridad con el token de autenticación
                 SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -114,7 +118,7 @@ public class LoginController {
                 switch (user.getRole().getDisplayName().toUpperCase()) {
                     case "ADMIN":
                         return "redirect:/dashboard/admin/index";
-                    case "EMPLEADO":
+                    case "EMPLOYEE":
                         return "redirect:/dashboard/employee/index";
                     default:
                         return "redirect:/dashboard";
@@ -125,6 +129,9 @@ public class LoginController {
                 return "auth/login";
             }
         } catch (HttpClientErrorException e) {
+            logger.error("HTTP Client Error: {}", e.getMessage());
+            logger.error("Status code: {}", e.getStatusCode());
+            logger.error("Response body: {}", e.getResponseBodyAsString());
             if (e.getStatusCode() == HttpStatus.FORBIDDEN) {
                 model.addAttribute("error", "Usuario o contraseña incorrectos. Por favor, inténtelo de nuevo.");
             } else {
@@ -132,8 +139,19 @@ public class LoginController {
             }
             return "auth/login";
         } catch (Exception e) {
+            logger.error("Unexpected error during login: ", e);
             model.addAttribute("error", "Ocurrió un error inesperado. Por favor, inténtelo de nuevo más tarde.");
+            e.printStackTrace();
             return "auth/login";
         }
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        // Invalidar la sesión
+        session.invalidate();
+        // Limpiar el contexto de seguridad
+        SecurityContextHolder.clearContext();
+        return "redirect:/login?logout";
     }
 }
