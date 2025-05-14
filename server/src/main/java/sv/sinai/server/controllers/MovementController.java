@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/movements") // http://localhost:8080/api/movements
+@RequestMapping("/api/movements") // http://localhost:8081/api/movements
 public class MovementController {
     private final MovementService movementService;
     private final UserService userService;

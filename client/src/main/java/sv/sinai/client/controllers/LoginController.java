@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,6 +26,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -146,6 +148,7 @@ public class LoginController {
         }
     }
 
+    // Método para cerrar sesión
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         // Invalidar la sesión
@@ -153,5 +156,14 @@ public class LoginController {
         // Limpiar el contexto de seguridad
         SecurityContextHolder.clearContext();
         return "redirect:/login?logout";
+    }
+
+    // Método para obtener el token de la sesión
+    @GetMapping("/token")
+    @PreAuthorize("isAuthenticated()")
+    @ResponseBody
+    public Map<String, String> getToken(HttpSession session) {
+        String token = session.getAttribute("token").toString();
+        return Collections.singletonMap("token", token);
     }
 }

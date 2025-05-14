@@ -41,6 +41,7 @@ public class SecurityConfig {
                         // Proteger todas las rutas de la API
                         .requestMatchers("/api/batches/**").authenticated()
                         .requestMatchers("/api/clients/**").authenticated()
+                        .requestMatchers("/api/dashboard/**").authenticated()
                         .requestMatchers("/api/movements/**").authenticated()
                         .requestMatchers("/api/products/**").authenticated()
                         .requestMatchers("/api/reports/**").authenticated()

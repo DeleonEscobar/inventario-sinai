@@ -30,9 +30,14 @@ public class BatchController {
 
     // Get all batches by product id
     @GetMapping("/product/{productId}")
-    public List<Batch> getAllBatchesByProductId(@PathVariable Integer productId) {
-        return batchService.getAllBatchesByProductId(productId)
-                .orElseThrow(() -> new ResourceNotFoundException("No batches found for product with id '" + productId + "'"));
+    public ResponseEntity<List<Batch>> getAllBatchesByProductId(@PathVariable Integer productId) {
+        List<Batch> batches = batchService.getAllBatchesByProductId(productId);
+
+        if (batches.isEmpty()) {
+            throw new ResourceNotFoundException("No batches found for product with id '" + productId + "'");
+        }
+
+        return ResponseEntity.ok(batches);
     }
 
     // Get batch by id

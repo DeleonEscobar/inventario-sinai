@@ -34,7 +34,8 @@ public class BatchService {
     }
 
     // Get all batches by product id
-    public Optional<List<Batch>> getAllBatchesByProductId(Integer productId) {
+
+    public List<Batch> getAllBatchesByProductId(Integer productId) {
         return batchRepository.findAllByProductId(productId);
     }
 

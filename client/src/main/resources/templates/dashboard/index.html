@@ -3,10 +3,45 @@
       layout:decorate="~{layouts/layoutDashboard.html}">
 <head>
     <title>Dashboard Inventario Pan Sinai</title>
-
+    <script src="/js/dashboard.js" type="module"></script>
 </head>
 <body>
+
     <div class="w-full md:p-6 md:pt-2" layout:fragment="custom-content">
+        <!-- Sección de Acceso Rápido -->
+        <div class="my-4">
+            <h3 class="text-xl lg:text-2xl font-bold mb-4">Acceso Rápido</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Gestión de Productos -->
+                <div class="bg-blue-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
+                    <div class="flex flex-col items-center">
+                        <h4 class="font-bold text-center">Gestionar Productos</h4>
+                    </div>
+                </div>
+
+                <!-- Gestión de Lotes -->
+                <div class="bg-green-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
+                    <div class="flex flex-col items-center">
+                        <h4 class="font-bold text-center">Gestionar Lotes</h4>
+                    </div>
+                </div>
+
+                <!-- Movimientos -->
+                <div class="bg-purple-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
+                    <div class="flex flex-col items-center">
+                        <h4 class="font-bold text-center">Registrar Movimientos</h4>
+                    </div>
+                </div>
+
+                <!-- Clientes -->
+                <div class="bg-orange-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
+                    <div class="flex flex-col items-center">
+                        <h4 class="font-bold text-center">Gestionar Clientes</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div>
             <div class="pr-6 pb-4 mb-4">
                 <h3 class="text-2xl font-bold">Control de Inventario Pan Sinaí</h3>
@@ -72,39 +107,7 @@
             </div>
         </div>
         
-        <!-- Sección de Acceso Rápido -->
-        <div class="mt-8">
-            <h3 class="text-xl lg:text-2xl font-bold mb-4">Acceso Rápido</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                <!-- Gestión de Productos -->
-                <div class="bg-blue-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
-                    <div class="flex flex-col items-center">
-                        <h4 class="font-bold text-center">Gestionar Productos</h4>
-                    </div>
-                </div>
-                
-                <!-- Gestión de Lotes -->
-                <div class="bg-green-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
-                    <div class="flex flex-col items-center">
-                        <h4 class="font-bold text-center">Gestionar Lotes</h4>
-                    </div>
-                </div>
-                
-                <!-- Movimientos -->
-                <div class="bg-purple-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
-                    <div class="flex flex-col items-center">
-                        <h4 class="font-bold text-center">Registrar Movimientos</h4>
-                    </div>
-                </div>
-                
-                <!-- Clientes -->
-                <div class="bg-orange-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
-                    <div class="flex flex-col items-center">
-                        <h4 class="font-bold text-center">Gestionar Clientes</h4>
-                    </div>
-                </div>
-            </div>
-        </div>
+
     </div>
 </body>
 </html>
