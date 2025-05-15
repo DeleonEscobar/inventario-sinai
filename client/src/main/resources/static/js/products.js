@@ -3,246 +3,187 @@ import { formatDate } from '/js/utils/formatDate.js';
 
 // Variables globales
 const apiEndpoint = 'http://localhost:8081/api/products';
-const tableBody = document.getElementById('products-table-body');
-const btnAddProduct = document.getElementById('btn-add-product');
-const modal = document.getElementById('product-modal');
-const closeModalBtn = document.getElementById('close-modal');
-const cancelModalBtn = document.getElementById('cancel-modal');
-const modalTitle = document.getElementById('modal-title');
-const productForm = document.getElementById('product-form');
-
-const inputId = document.getElementById('product-id');
-const inputName = document.getElementById('product-name');
-
 let editing = false;
 
-// Función para abrir el modal (para crear o editar)
+// Inicializar cuando el documento esté listo
+$(document).ready(function() {
+    initEventHandlers();
+    fetchProducts();
+    
+    // Si hay un editProductId en la URL, abrir el modal para editarlo
+    const urlParams = new URLSearchParams(window.location.search);
+    const editProductId = urlParams.get('editProductId');
+    if (editProductId) {
+        fetchAndEditProduct(editProductId);
+    }
+});
+
+function initEventHandlers() {
+    // Botones del modal
+    $('#btn-add-product').on('click', () => openModal(false));
+    $('#close-modal, #cancel-modal').on('click', closeModal);
+    
+    // Cerrar modal al hacer clic fuera
+    $(window).on('click', (e) => {
+        if (e.target === $('#product-modal')[0]) closeModal();
+    });
+    
+    // Manejar envío del formulario
+    $('#product-form').on('submit', saveProduct);
+}
+
 function openModal(edit = false, product = null) {
-    modal.classList.remove('hidden');
+    $('#product-modal').removeClass('hidden');
     editing = edit;
+    
     if (edit && product) {
-        modalTitle.textContent = 'Editar Producto';
-        inputId.value = product.id;
-        inputName.value = product.name;
+        $('#modal-title').text('Editar Producto');
+        $('#product-id').val(product.id);
+        $('#product-name').val(product.name);
     } else {
-        modalTitle.textContent = 'Agregar Producto';
-        productForm.reset();
-        inputId.value = '';
+        $('#modal-title').text('Agregar Producto');
+        $('#product-form')[0].reset();
+        $('#product-id').val('');
     }
 }
 
-// Función para cerrar el modal
 function closeModal() {
-    modal.classList.add('hidden');
-    productForm.reset();
-    inputId.value = '';
+    $('#product-modal').addClass('hidden');
+    $('#product-form')[0].reset();
+    $('#product-id').val('');
 }
 
-// Event listeners para el modal
-btnAddProduct.addEventListener('click', () => openModal(false));
-closeModalBtn.addEventListener('click', closeModal);
-cancelModalBtn.addEventListener('click', closeModal);
-
-window.addEventListener('click', (e) => {
-    if (e.target === modal) closeModal();
-});
-
-// Función principal para cargar productos
 async function fetchProducts() {
     try {
-        tableBody.innerHTML = '<tr><td colspan="2" class="text-center py-6 text-slate-400">Cargando...</td></tr>';
-
-        // Obtener token de autenticación
-        let userToken = await getTokenRequest();
-
+        $('#products-table-body').html('<tr><td colspan="4" class="text-center py-6 text-slate-400">Cargando...</td></tr>');
+        
+        const userToken = await getTokenRequest();
         if (!userToken) {
-            console.error('No se pudo obtener el token');
-            tableBody.innerHTML = '<tr><td colspan="2" class="text-center py-6 text-red-500">Error de autenticación</td></tr>';
+            $('#products-table-body').html('<tr><td colspan="4" class="text-center py-6 text-red-500">Error de autenticación</td></tr>');
             return;
         }
-
-        const headers = {
-            'Authorization': `Bearer ${userToken}`,
-            'Content-Type': 'application/json'
-        };
-
-        const res = await fetch(apiEndpoint, {
-            headers
+        
+        const products = await $.ajax({
+            url: apiEndpoint,
+            headers: { 'Authorization': `Bearer ${userToken}` }
         });
-
-        if (!res.ok) {
-            throw new Error(`Error HTTP: ${res.status}`);
-        }
-
-        const products = await res.json();
+        
         renderProducts(products);
     } catch (err) {
         console.error('Error al cargar productos:', err);
-        tableBody.innerHTML = '<tr><td colspan="2" class="text-center py-6 text-red-500">Error al cargar productos</td></tr>';
+        $('#products-table-body').html('<tr><td colspan="4" class="text-center py-6 text-red-500">Error al cargar productos</td></tr>');
     }
 }
 
-// Función para renderizar la tabla de productos
 function renderProducts(products) {
+    const $tbody = $('#products-table-body');
+    
     if (!products || !products.length) {
-        tableBody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-slate-400">No hay productos registrados</td></tr>';
+        $tbody.html('<tr><td colspan="4" class="text-center py-6 text-slate-400">No hay productos registrados</td></tr>');
         return;
     }
-
-    tableBody.innerHTML = '';
-    products.forEach(product => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td class="px-6 py-4">${product.name}</td>
-            <td class="px-6 py-4">${formatDate(product.createdAt)}</td>
-            <td class="px-6 py-4">${formatDate(product.updatedAt)}</td>
-            <td class="px-6 py-4 text-center">
-                <button class="edit-btn text-blue-600 hover:underline mr-2" data-id="${product.id}">Editar</button>
-                <button class="delete-btn text-red-600 hover:underline" data-id="${product.id}">Eliminar</button>
-            </td>
-        `;
-        tableBody.appendChild(tr);
+    
+    $tbody.empty();
+    
+    $.each(products, function(i, product) {
+        $('<tr>')
+            .append(`<td class="px-6 py-4">${product.name}</td>`)
+            .append(`<td class="px-6 py-4">${formatDate(product.createdAt)}</td>`)
+            .append(`<td class="px-6 py-4">${formatDate(product.updatedAt)}</td>`)
+            .append(`
+                <td class="px-6 py-4 text-center">
+                    <button class="edit-btn text-blue-600 hover:underline mr-2" data-id="${product.id}">Editar</button>
+                    <button class="delete-btn text-red-600 hover:underline" data-id="${product.id}">Eliminar</button>
+                </td>
+            `)
+            .appendTo($tbody);
     });
-
+    
     // Asignar eventos a los botones
     assignButtonEvents();
 }
 
-// Función para asignar eventos a los botones de editar y eliminar
-async function assignButtonEvents() {
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            try {
-                const id = e.target.getAttribute('data-id');
-
-                // Obtener token de autenticación
-                let userToken = await getTokenRequest();
-
-                if (!userToken) {
-                    console.error('No se pudo obtener el token');
-                    alert('Error de autenticación');
-                    return;
-                }
-
-                const headers = {
-                    'Authorization': `Bearer ${userToken}`,
-                    'Content-Type': 'application/json'
-                };
-
-                const res = await fetch(`${apiEndpoint}/${id}`, {
-                    headers
-                });
-
-                if (!res.ok) {
-                    throw new Error(`Error HTTP: ${res.status}`);
-                }
-
-                const product = await res.json();
-                openModal(true, product);
-            } catch (err) {
-                console.log(err);
-                console.error('Error al obtener detalles del producto:', err);
-                alert('No se pudo cargar la información del producto');
-            }
-        });
+function assignButtonEvents() {
+    // Botón editar
+    $('.edit-btn').on('click', function() {
+        const id = $(this).data('id');
+        fetchAndEditProduct(id);
     });
-
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', async (e) => {
-            try {
-                const id = e.target.getAttribute('data-id');
-                if (confirm('¿Seguro que deseas eliminar este producto?')) {
-                    // Obtener token de autenticación
-                    let userToken = await getTokenRequest();
-
-                    if (!userToken) {
-                        console.error('No se pudo obtener el token');
-                        alert('Error de autenticación');
-                        return;
-                    }
-
-                    const headers = {
-                        'Authorization': `Bearer ${userToken}`,
-                        'Content-Type': 'application/json'
-                    };
-
-                    const res = await fetch(`${apiEndpoint}/${id}`, {
-                        method: 'DELETE',
-                        headers
-                    });
-
-                    if (!res.ok) {
-                        throw new Error(`Error HTTP: ${res.status}`);
-                    }
-
-                    fetchProducts();
-                }
-            } catch (err) {
-                console.error('Error al eliminar el producto:', err);
-                alert('No se pudo eliminar el producto');
+    
+    // Botón eliminar
+    $('.delete-btn').on('click', async function() {
+        const id = $(this).data('id');
+        
+        if (!confirm('¿Seguro que deseas eliminar este producto?')) return;
+        
+        try {
+            const userToken = await getTokenRequest();
+            if (!userToken) {
+                alert('Error de autenticación');
+                return;
             }
-        });
+            
+            await $.ajax({
+                url: `${apiEndpoint}/${id}`,
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${userToken}` }
+            });
+            
+            fetchProducts();
+        } catch (err) {
+            console.error('Error al eliminar el producto:', err);
+            alert('No se pudo eliminar el producto');
+        }
     });
 }
 
-// Event listener para el formulario
-productForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+async function fetchAndEditProduct(id) {
     try {
-        const id = inputId.value;
-        const product = {
-            name: inputName.value,
-        };
-
-        // Obtener token de autenticación
-        let userToken = await getTokenRequest();
-
+        const userToken = await getTokenRequest();
         if (!userToken) {
-            console.error('No se pudo obtener el token');
             alert('Error de autenticación');
             return;
         }
+        
+        const product = await $.ajax({
+            url: `${apiEndpoint}/${id}`,
+            headers: { 'Authorization': `Bearer ${userToken}` }
+        });
+        
+        openModal(true, product);
+    } catch (err) {
+        console.error('Error al obtener detalles del producto:', err);
+        alert('No se pudo cargar la información del producto');
+    }
+}
 
-        const headers = {
-            'Authorization': `Bearer ${userToken}`,
-            'Content-Type': 'application/json'
+async function saveProduct(e) {
+    e.preventDefault();
+    
+    try {
+        const id = $('#product-id').val();
+        const product = {
+            name: $('#product-name').val(),
         };
-
-        let res;
-        if (editing && id) {
-            res = await fetch(`${apiEndpoint}/${id}`, {
-                method: 'PUT',
-                headers,
-                body: JSON.stringify(product)
-            });
-        } else {
-            res = await fetch(apiEndpoint, {
-                method: 'POST',
-                headers,
-                body: JSON.stringify(product)
-            });
+        
+        const userToken = await getTokenRequest();
+        if (!userToken) {
+            alert('Error de autenticación');
+            return;
         }
-
-        if (!res.ok) {
-            throw new Error(`Error HTTP: ${res.status}`);
-        }
-
+        
+        await $.ajax({
+            url: editing && id ? `${apiEndpoint}/${id}` : apiEndpoint,
+            method: editing && id ? 'PUT' : 'POST',
+            headers: { 'Authorization': `Bearer ${userToken}` },
+            contentType: 'application/json',
+            data: JSON.stringify(product)
+        });
+        
         closeModal();
         fetchProducts();
     } catch (err) {
-        console.log(err);
         console.error('Error al guardar el producto:', err);
         alert('Error al guardar el producto');
     }
-});
-
-// Inicializar la carga de productos
-if (document.readyState === 'loading') {
-    // Si aún no está listo, esperar al evento DOMContentLoaded
-    document.addEventListener('DOMContentLoaded', () => {
-        fetchProducts();
-    });
-} else {
-    // Si ya está listo, ejecutar inmediatamente
-    fetchProducts();
 }

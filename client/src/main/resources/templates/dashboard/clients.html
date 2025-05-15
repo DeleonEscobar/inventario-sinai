@@ -2,42 +2,46 @@
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layoutDashboard.html}">
 <head>
-    <title>Productos | Inventario Pan Sinai</title>
-    <script src="/js/products.js" type="module"></script>
+    <title>Clientes | Inventario Pan Sinai</title>
+    <script src="/js/clients.js" type="module"></script>
 </head>
 <body>
-
 <div class="w-full md:p-6 md:pt-16" layout:fragment="custom-content">
     <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold">Gestión de Productos</h2>
-        <button id="btn-add-product" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">Agregar Producto</button>
+        <h2 class="text-2xl font-bold">Gestión de Clientes</h2>
+        <button id="btn-add-client" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">Agregar Cliente</button>
     </div>
     <div class="overflow-x-auto bg-white rounded-lg border border-slate-300">
         <table class="min-w-full divide-y divide-slate-200">
             <thead class="bg-slate-100">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Nombre</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Dirección</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Creado</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Actualizado</th>
                     <th class="px-6 py-3 text-center text-xs font-medium text-slate-700 uppercase">Acciones</th>
                 </tr>
             </thead>
-            <tbody id="products-table-body" class="divide-y divide-slate-200">
-                <!-- Productos se cargan dinámicamente -->
+            <tbody id="clients-table-body" class="divide-y divide-slate-200">
+                <!-- Clientes se cargan dinámicamente -->
             </tbody>
         </table>
     </div>
 
-    <!-- Modal para agregar/editar producto -->
-    <div id="product-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 hidden">
+    <!-- Modal para agregar/editar cliente -->
+    <div id="client-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 hidden">
         <div class="bg-white rounded-lg shadow-lg w-full max-w-md p-6 relative">
             <button id="close-modal" class="absolute top-2 right-2 text-slate-400 hover:text-slate-700 text-2xl">&times;</button>
-            <h3 id="modal-title" class="text-xl font-bold mb-4">Agregar Producto</h3>
-            <form id="product-form" class="space-y-4">
-                <input type="hidden" id="product-id">
+            <h3 id="modal-title" class="text-xl font-bold mb-4">Agregar Cliente</h3>
+            <form id="client-form" class="space-y-4">
+                <input type="hidden" id="client-id">
                 <div>
-                    <label for="product-name" class="block text-sm font-medium text-slate-700">Nombre</label>
-                    <input type="text" id="product-name" class="mt-1 block w-full border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                    <label for="client-name" class="block text-sm font-medium text-slate-700">Nombre</label>
+                    <input type="text" id="client-name" class="mt-1 block w-full border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label for="client-address" class="block text-sm font-medium text-slate-700">Dirección</label>
+                    <input type="text" id="client-address" class="mt-1 block w-full border border-slate-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                 </div>
                 <div class="flex justify-end gap-2 mt-4">
                     <button type="button" id="cancel-modal" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded">Cancelar</button>
@@ -48,4 +52,4 @@
     </div>
 </div>
 </body>
-</html> 
+</html>
