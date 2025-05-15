@@ -20,6 +20,8 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.ui.Model;
 import sv.sinai.client.models.User;
 import sv.sinai.client.models.Movement;
+import sv.sinai.client.models.Client;
+import sv.sinai.client.models.Batch;
 
 @Controller
 @RequestMapping("/dashboard")
@@ -48,6 +50,17 @@ public class MovementsController extends BaseController {
         User user = getSessionUser(session);
         model.addAttribute("user", user);
         model.addAttribute("pageTitle", "Gestión de Movimientos");
+        String token = getTokenFromSession(session);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<Movement[]> response = restTemplate.exchange(
+            BASE_URL + "/movements",
+            HttpMethod.GET,
+            entity,
+            Movement[].class
+        );
+        model.addAttribute("movements", response.getBody());
         return "dashboard/movements/index";
     }
     
@@ -59,6 +72,18 @@ public class MovementsController extends BaseController {
         model.addAttribute("user", user);
         model.addAttribute("pageTitle", "Nuevo Movimiento - Seleccionar Cliente");
         model.addAttribute("step", 1);
+        // Obtener clientes
+        String token = getTokenFromSession(session);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        ResponseEntity<Client[]> response = restTemplate.exchange(
+            BASE_URL + "/clients",
+            HttpMethod.GET,
+            entity,
+            Client[].class
+        );
+        model.addAttribute("clients", response.getBody());
         return "dashboard/movements/create";
     }
     
@@ -75,22 +100,18 @@ public class MovementsController extends BaseController {
         model.addAttribute("pageTitle", "Nuevo Movimiento - Seleccionar Lotes");
         model.addAttribute("step", 2);
         model.addAttribute("clientId", clientId);
-        
-        // Obtener el cliente seleccionado
         String token = getTokenFromSession(session);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        
-        ResponseEntity<Object> clientResponse = restTemplate.exchange(
-            BASE_URL + "/api/clients/" + clientId,
+        // Obtener lotes del cliente
+        ResponseEntity<Batch[]> response = restTemplate.exchange(
+            BASE_URL + "/batches?clientId=" + clientId,
             HttpMethod.GET,
             entity,
-            Object.class
+            Batch[].class
         );
-        
-        model.addAttribute("client", clientResponse.getBody());
-        
+        model.addAttribute("batches", response.getBody());
         return "dashboard/movements/create";
     }
     
@@ -109,38 +130,18 @@ public class MovementsController extends BaseController {
         model.addAttribute("step", 3);
         model.addAttribute("clientId", clientId);
         model.addAttribute("batchIds", batchIds);
-        
-        // Obtener el cliente y lotes seleccionados para mostrar resumen
         String token = getTokenFromSession(session);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        
-        ResponseEntity<Object> clientResponse = restTemplate.exchange(
-            BASE_URL + "/api/clients/" + clientId,
+        // Obtener responsables (usuarios con rol 2)
+        ResponseEntity<User[]> response = restTemplate.exchange(
+            BASE_URL + "/users?role=2",
             HttpMethod.GET,
             entity,
-            Object.class
+            User[].class
         );
-        
-        model.addAttribute("client", clientResponse.getBody());
-        
-        // Para cada id de lote, obtener la información
-        String[] batchIdArray = batchIds.split(",");
-        Object[] selectedBatches = new Object[batchIdArray.length];
-        
-        for (int i = 0; i < batchIdArray.length; i++) {
-            ResponseEntity<Object> batchResponse = restTemplate.exchange(
-                BASE_URL + "/api/batches/" + batchIdArray[i],
-                HttpMethod.GET,
-                entity,
-                Object.class
-            );
-            selectedBatches[i] = batchResponse.getBody();
-        }
-        
-        model.addAttribute("selectedBatches", selectedBatches);
-        
+        model.addAttribute("responsibles", response.getBody());
         return "dashboard/movements/create";
     }
     
@@ -170,7 +171,7 @@ public class MovementsController extends BaseController {
         
         // Cliente
         ResponseEntity<Object> clientResponse = restTemplate.exchange(
-            BASE_URL + "/api/clients/" + clientId,
+            BASE_URL + "/clients/" + clientId,
             HttpMethod.GET,
             entity,
             Object.class
@@ -179,7 +180,7 @@ public class MovementsController extends BaseController {
         
         // Responsable
         ResponseEntity<Object> responsibleResponse = restTemplate.exchange(
-            BASE_URL + "/api/users/" + responsibleId,
+            BASE_URL + "/users/" + responsibleId,
             HttpMethod.GET,
             entity,
             Object.class
@@ -192,7 +193,7 @@ public class MovementsController extends BaseController {
         
         for (int i = 0; i < batchIdArray.length; i++) {
             ResponseEntity<Object> batchResponse = restTemplate.exchange(
-                BASE_URL + "/api/batches/" + batchIdArray[i],
+                BASE_URL + "/batches/" + batchIdArray[i],
                 HttpMethod.GET,
                 entity,
                 Object.class
@@ -233,7 +234,7 @@ public class MovementsController extends BaseController {
             HttpEntity<Movement> requestEntity = new HttpEntity<>(movement, headers);
             
             ResponseEntity<Movement> response = restTemplate.exchange(
-                BASE_URL + "/api/movements",
+                BASE_URL + "/movements",
                 HttpMethod.POST,
                 requestEntity,
                 Movement.class
@@ -266,7 +267,7 @@ public class MovementsController extends BaseController {
             HttpEntity<String> entity = new HttpEntity<>(headers);
             
             ResponseEntity<Movement> response = restTemplate.exchange(
-                BASE_URL + "/api/movements/" + id,
+                BASE_URL + "/movements/" + id,
                 HttpMethod.GET,
                 entity,
                 Movement.class
@@ -301,7 +302,7 @@ public class MovementsController extends BaseController {
             HttpEntity<String> entity = new HttpEntity<>(headers);
             
             ResponseEntity<Movement> response = restTemplate.exchange(
-                BASE_URL + "/api/movements/" + id,
+                BASE_URL + "/movements/" + id,
                 HttpMethod.GET,
                 entity,
                 Movement.class
@@ -335,7 +336,7 @@ public class MovementsController extends BaseController {
             
             // Obtener el movimiento actual
             ResponseEntity<Movement> getResponse = restTemplate.exchange(
-                BASE_URL + "/api/movements/" + id,
+                BASE_URL + "/movements/" + id,
                 HttpMethod.GET,
                 new HttpEntity<>(headers),
                 Movement.class
@@ -347,7 +348,7 @@ public class MovementsController extends BaseController {
             HttpEntity<Movement> requestEntity = new HttpEntity<>(movement, headers);
             
             ResponseEntity<Movement> response = restTemplate.exchange(
-                BASE_URL + "/api/movements/" + id,
+                BASE_URL + "/movements/" + id,
                 HttpMethod.PUT,
                 requestEntity,
                 Movement.class
@@ -378,7 +379,7 @@ public class MovementsController extends BaseController {
             HttpEntity<String> entity = new HttpEntity<>(headers);
             
             restTemplate.exchange(
-                BASE_URL + "/api/movements/" + id,
+                BASE_URL + "/movements/" + id,
                 HttpMethod.DELETE,
                 entity,
                 Void.class

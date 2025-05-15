@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/layoutDashboard.html}">
+<head>
+    <title th:text="${pageTitle}">Detalle de Movimiento</title>
+</head>
+<body>
+<div class="w-full md:p-6 md:pt-16" layout:fragment="custom-content">
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold mb-2" th:text="${pageTitle}">Detalle de Movimiento</h2>
+        <a href="/dashboard/admin/movements" class="text-purple-600 hover:underline">&larr; Volver a la lista</a>
+    </div>
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <div class="mb-4">
+            <b>Nombre:</b> <span th:text="${movement.name != null ? movement.name : movement.notes}"></span><br/>
+            <b>Cliente:</b> <span th:text="${movement.client.name}"></span><br/>
+            <b>Responsable:</b> <span th:text="${movement.responsibleUser.name}"></span><br/>
+            <b>Estado:</b> <span th:text="${movement.status}"></span><br/>
+            <b>Tipo:</b> <span th:text="${movement.type}"></span><br/>
+            <b>Creado:</b> <span th:text="${#dates.format(movement.createdAt, 'dd/MM/yyyy HH:mm')}"></span><br/>
+        </div>
+        <div>
+            <b>Lotes asociados:</b>
+            <ul class="list-disc ml-6">
+                <li th:each="batch : ${movement.batches}">
+                    <span th:text="${batch.serialNumber}"></span> - <span th:text="${batch.product.name}"></span> (<span th:text="${batch.amount}"></span>)
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html> 

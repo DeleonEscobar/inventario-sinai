@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/layoutDashboard.html}">
+<head>
+    <title th:text="${pageTitle}">Nuevo Movimiento</title>
+</head>
+<body>
+<div class="w-full md:p-6 md:pt-16" layout:fragment="custom-content">
+    <div class="mb-6">
+        <h2 class="text-2xl font-bold mb-2" th:text="${pageTitle}">Nuevo Movimiento</h2>
+        <a href="/dashboard/admin/movements" class="text-purple-600 hover:underline">&larr; Volver a la lista</a>
+    </div>
+    <div class="bg-white rounded-lg shadow p-6 mb-6">
+        <form th:action="@{/dashboard/admin/movements/create}" method="post">
+            <input type="hidden" name="clientId" th:value="${clientId}" />
+            <input type="hidden" name="batchIds" th:value="${batchIds}" />
+            <input type="hidden" name="responsibleId" th:value="${responsibleId}" />
+            <div th:switch="${step}">
+                <!-- Paso 1: Seleccionar cliente -->
+                <div th:case="1">
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Selecciona un cliente</label>
+                    <select name="clientId" class="mt-1 block w-full border border-slate-300 rounded px-3 py-2" required>
+                        <option value="">Seleccione un cliente</option>
+                        <option th:each="client : ${clients}" th:value="${client.id}" th:text="${client.name}"></option>
+                    </select>
+                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded mt-4">Siguiente</button>
+                </div>
+                <!-- Paso 2: Seleccionar lotes -->
+                <div th:case="2">
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Selecciona los lotes</label>
+                    <div class="max-h-40 overflow-y-auto border rounded p-2 mb-2">
+                        <label th:each="batch : ${batches}" class="flex items-center gap-2 mb-1">
+                            <input type="checkbox" name="batchCheckbox" th:value="${batch.id}" />
+                            <span th:text="${batch.serialNumber + ' - ' + batch.product.name + ' (' + batch.amount + ')'}"></span>
+                        </label>
+                    </div>
+                    <input type="hidden" name="batchIds" id="batchIdsInput" th:value="${batchIds}" />
+                    <button type="button" onclick="window.history.back()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded">Anterior</button>
+                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded ml-2" onclick="return setBatchIds()">Siguiente</button>
+                </div>
+                <!-- Paso 3: Seleccionar responsable -->
+                <div th:case="3">
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Selecciona responsable</label>
+                    <select name="responsibleId" class="mt-1 block w-full border border-slate-300 rounded px-3 py-2" required>
+                        <option value="">Seleccione responsable</option>
+                        <option th:each="resp : ${responsibles}" th:value="${resp.id}" th:text="${resp.name}"></option>
+                    </select>
+                    <button type="button" onclick="window.history.back()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded">Anterior</button>
+                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded ml-2">Siguiente</button>
+                </div>
+                <!-- Paso 4: Confirmar -->
+                <div th:case="4">
+                    <h4 class="font-bold mb-2">Resumen</h4>
+                    <div class="mb-4">
+                        <b>Cliente:</b> <span th:text="${client.name}"></span><br/>
+                        <b>Responsable:</b> <span th:text="${responsible.name}"></span><br/>
+                        <b>Lotes:</b>
+                        <ul class="list-disc ml-6">
+                            <li th:each="batch : ${selectedBatches}">
+                                <span th:text="${batch.serialNumber}"></span> - <span th:text="${batch.product.name}"></span> (<span th:text="${batch.amount}"></span>)
+                            </li>
+                        </ul>
+                    </div>
+                    <button type="button" onclick="window.history.back()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded">Anterior</button>
+                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded ml-2">Guardar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script th:inline="javascript">
+    function setBatchIds() {
+        var checked = Array.from(document.querySelectorAll('input[name="batchCheckbox"]:checked')).map(cb => cb.value);
+        document.getElementById('batchIdsInput').value = checked.join(',');
+        return checked.length > 0;
+    }
+</script>
+</body>
+</html> 

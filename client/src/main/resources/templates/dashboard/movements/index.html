@@ -3,13 +3,12 @@
       layout:decorate="~{layouts/layoutDashboard.html}">
 <head>
     <title>Movimientos | Inventario Pan Sinai</title>
-    <script src="/js/movements.js" type="module"></script>
 </head>
 <body>
 <div class="w-full md:p-6 md:pt-16" layout:fragment="custom-content">
     <div class="flex justify-between items-center mb-6">
         <h2 class="text-2xl font-bold">Gestión de Movimientos</h2>
-        <button id="btn-add-movement" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition">Nuevo Movimiento</button>
+        <a href="/dashboard/admin/movements/create" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition">Nuevo Movimiento</a>
     </div>
     <div class="overflow-x-auto bg-white rounded-lg border border-slate-300">
         <table class="min-w-full divide-y divide-slate-200">
@@ -23,49 +22,20 @@
                     <th class="px-6 py-3 text-center text-xs font-medium text-slate-700 uppercase">Acciones</th>
                 </tr>
             </thead>
-            <tbody id="movements-table-body" class="divide-y divide-slate-200">
-                <!-- Movimientos se cargan dinámicamente -->
+            <tbody>
+                <tr th:each="movement : ${movements}">
+                    <td class="px-6 py-4" th:text="${movement.name != null ? movement.name : movement.notes}"></td>
+                    <td class="px-6 py-4" th:text="${movement.client.name}"></td>
+                    <td class="px-6 py-4" th:text="${movement.responsibleUser.name}"></td>
+                    <td class="px-6 py-4" th:text="${movement.status}"></td>
+                    <td class="px-6 py-4" th:text="${#dates.format(movement.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                    <td class="px-6 py-4 text-center">
+                        <a th:href="@{'/dashboard/admin/movements/' + ${movement.id}}" class="text-purple-600 hover:underline mr-2">Ver</a>
+                        <a th:href="@{'/dashboard/admin/movements/' + ${movement.id} + '/edit'}" class="text-blue-600 hover:underline">Editar</a>
+                    </td>
+                </tr>
             </tbody>
         </table>
-    </div>
-
-    <!-- Modal para crear/editar movimiento (wizard) -->
-    <div id="movement-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80 hidden">
-        <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl p-6 relative">
-            <button id="close-modal" class="absolute top-2 right-2 text-slate-400 hover:text-slate-700 text-2xl">&times;</button>
-            <h3 id="modal-title" class="text-xl font-bold mb-4">Nuevo Movimiento</h3>
-            <form id="movement-form" class="space-y-4">
-                <div id="stepper">
-                    <!-- Paso 1: Seleccionar cliente -->
-                    <div class="step step-client">
-                        <label for="movement-client" class="block text-sm font-medium text-slate-700">Cliente</label>
-                        <select id="movement-client" class="mt-1 block w-full border border-slate-300 rounded px-3 py-2" required></select>
-                        <button type="button" class="next-step bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded mt-4">Siguiente</button>
-                    </div>
-                    <!-- Paso 2: Seleccionar lotes -->
-                    <div class="step step-batches hidden">
-                        <label class="block text-sm font-medium text-slate-700 mb-2">Selecciona los lotes</label>
-                        <div id="batches-list" class="max-h-40 overflow-y-auto border rounded p-2 mb-2"></div>
-                        <button type="button" class="prev-step bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded">Anterior</button>
-                        <button type="button" class="next-step bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded ml-2">Siguiente</button>
-                    </div>
-                    <!-- Paso 3: Asignar responsable -->
-                    <div class="step step-responsible hidden">
-                        <label for="movement-responsible" class="block text-sm font-medium text-slate-700">Responsable</label>
-                        <select id="movement-responsible" class="mt-1 block w-full border border-slate-300 rounded px-3 py-2" required></select>
-                        <button type="button" class="prev-step bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded">Anterior</button>
-                        <button type="button" class="next-step bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded ml-2">Siguiente</button>
-                    </div>
-                    <!-- Paso 4: Confirmar -->
-                    <div class="step step-confirm hidden">
-                        <h4 class="font-bold mb-2">Resumen</h4>
-                        <div id="movement-summary" class="mb-4"></div>
-                        <button type="button" class="prev-step bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded">Anterior</button>
-                        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded ml-2">Guardar</button>
-                    </div>
-                </div>
-            </form>
-        </div>
     </div>
 </div>
 </body>
