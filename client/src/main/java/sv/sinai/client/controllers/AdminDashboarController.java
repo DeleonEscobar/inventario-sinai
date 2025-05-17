@@ -46,74 +46,25 @@ public class AdminDashboarController extends BaseController {
         return "dashboard/index";
     }
 
-    // API Endpoints para datos del dashboard
-    @GetMapping("/api/dashboard/available-products")
+    // API Endpoint para datos del dashboard
+    @GetMapping("/api/dashboard/boss")
     @ResponseBody
     @PreAuthorize("hasAuthority('ACCESS_ADMIN')")
-    public ResponseEntity<Map> getAvailableProducts(HttpSession session) {
+    public ResponseEntity<Map> getDashboardManagerTools(HttpSession session) {
         String token = getSessionToken(session);
+        Long userId = getSessionUser(session).getId();
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        
+
         return restTemplate.exchange(
-            BASE_URL + "/dashboard/available-products",
-            HttpMethod.GET,
-            entity,
-            Map.class
+                BASE_URL + "/dashboard/boss/" + userId,
+                HttpMethod.GET,
+                entity,
+                Map.class
         );
     }
 
-    @GetMapping("/api/dashboard/pending-movements")
-    @ResponseBody
-    @PreAuthorize("hasAuthority('ACCESS_ADMIN')")
-    public ResponseEntity<Map> getPendingMovements(HttpSession session) {
-        String token = getSessionToken(session);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + token);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        
-        return restTemplate.exchange(
-            BASE_URL + "/dashboard/pending-movements",
-            HttpMethod.GET,
-            entity,
-            Map.class
-        );
-    }
-
-    @GetMapping("/api/dashboard/recent-activities")
-    @ResponseBody
-    @PreAuthorize("hasAuthority('ACCESS_ADMIN')")
-    public ResponseEntity<Map> getRecentActivities(HttpSession session) {
-        String token = getSessionToken(session);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + token);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        
-        return restTemplate.exchange(
-            BASE_URL + "/dashboard/recent-activities",
-            HttpMethod.GET,
-            entity,
-            Map.class
-        );
-    }
-
-    @GetMapping("/api/dashboard/expiring-batches")
-    @ResponseBody
-    @PreAuthorize("hasAuthority('ACCESS_ADMIN')")
-    public ResponseEntity<Map> getExpiringBatches(HttpSession session) {
-        String token = getSessionToken(session);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + token);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        
-        return restTemplate.exchange(
-            BASE_URL + "/dashboard/expiring-batches",
-            HttpMethod.GET,
-            entity,
-            Map.class
-        );
-    }
 
     @GetMapping("/api/token")
     @ResponseBody

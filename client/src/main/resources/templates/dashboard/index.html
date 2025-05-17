@@ -3,7 +3,9 @@
       layout:decorate="~{layouts/layoutDashboard.html}">
 <head>
     <title>Dashboard Inventario Pan Sinai</title>
-    <script src="/js/dashboard.js" type="module"></script>
+
+    <script>const currentUserId = "[[${user.id}]]";</script>
+    <script src="/js/dashboard.js" type="module" defer></script>
 </head>
 <body>
 
@@ -16,6 +18,7 @@
                 <a href="./products" class="bg-blue-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
                     <div class="flex flex-col items-center">
                         <h4 class="font-bold text-center">Gestionar Productos</h4>
+                        <p th:text="${user.name}"></p>
                     </div>
                 </a>
 
