@@ -23,6 +23,11 @@ public class BatchService {
         return batchRepository.findAll();
     }
 
+    // Get all batches by id
+    public List<Batch> getAllBatchesById(List<Integer> ids) {
+        return batchRepository.findAllById(ids);
+    }
+
     // Get batch by id
     public Optional<Batch> getBatchById(Integer id) {
         return batchRepository.findById(id);

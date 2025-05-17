@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport
+        xmlns="http://jasperreports.sourceforge.net/jasperreports"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+          http://jasperreports.sourceforge.net/jasperreports
+          http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+        name="batches_report"
+        language="groovy"
+        pageWidth="595" pageHeight="842"
+        columnWidth="555"
+        leftMargin="20" rightMargin="20"
+        topMargin="20" bottomMargin="20"
+        uuid="b1a2c3d4-e5f6-7890-abcd-ef1234567890">
+
+    <!-- Definición de estilos -->
+    <style name="Title" fontName="Arial" fontSize="20" isBold="true" isUnderline="false" pdfFontName="Helvetica-Bold"/>
+    <style name="Subtitle" fontName="Arial" fontSize="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+    <style name="ColumnHeader" fontName="Arial" fontSize="10" isBold="true" pdfFontName="Helvetica-Bold"/>
+    <style name="DetailRow" fontName="Arial" fontSize="9" pdfFontName="Helvetica"/>
+    <style name="Total" fontName="Arial" fontSize="12" isBold="true" pdfFontName="Helvetica-Bold"/>
+
+    <!-- Parámetros para mostrar datos de cabecera -->
+    <parameter name="REPORT_TITLE" class="java.lang.String" isForPrompting="false">
+        <defaultValueExpression><![CDATA["Reporte de Lotes"]]></defaultValueExpression>
+    </parameter>
+    <parameter name="FILTER_DESCRIPTION" class="java.lang.String" isForPrompting="false"/>
+    <parameter name="LOGO" class="java.io.InputStream"/>
+
+    <!-- Campos de cada batch -->
+    <field name="id" class="java.lang.Integer"/>
+    <field name="product.name" class="java.lang.String"/>
+    <field name="amount" class="java.lang.Integer"/>
+    <field name="price" class="java.math.BigDecimal"/>
+    <field name="expirationDate" class="java.time.Instant"/>
+    <field name="serialNumber" class="java.lang.String"/>
+    <field name="createdAt" class="java.time.Instant"/>
+
+    <!-- Variable calculada para el total de productos -->
+    <variable name="TOTAL_AMOUNT" class="java.lang.Integer" calculation="Sum">
+        <variableExpression><![CDATA[$F{amount}]]></variableExpression>
+        <initialValueExpression><![CDATA[0]]></initialValueExpression>
+    </variable>
+
+    <background>
+        <band height="802" splitType="Stretch">
+            <!-- Fondo sutilmente coloreado para las páginas -->
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="802" backcolor="#F8F8F8" mode="Opaque"/>
+                <graphicElement>
+                    <pen lineWidth="0"/>
+                </graphicElement>
+            </rectangle>
+        </band>
+    </background>
+
+    <title>
+        <band height="120" splitType="Stretch">
+            <!-- Encabezado con logo -->
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="50" backcolor="#2C3E50" forecolor="#2C3E50"/>
+            </rectangle>
+
+            <textField>
+                <reportElement x="10" y="10" width="400" height="30" forecolor="#FFFFFF" style="Title"/>
+                <textElement verticalAlignment="Middle">
+                    <font size="22" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$P{REPORT_TITLE}]]></textFieldExpression>
+            </textField>
+
+            <image>
+                <reportElement x="465" y="5" width="80" height="40">
+                    <printWhenExpression><![CDATA[$P{LOGO} != null]]></printWhenExpression>
+                </reportElement>
+                <imageExpression><![CDATA[$P{LOGO}]]></imageExpression>
+            </image>
+
+            <!-- Información adicional -->
+            <rectangle>
+                <reportElement x="0" y="60" width="555" height="50" backcolor="#FFFFFF"/>
+                <graphicElement>
+                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                </graphicElement>
+            </rectangle>
+
+            <staticText>
+                <reportElement x="10" y="65" width="140" height="15" style="Subtitle"/>
+                <text><![CDATA[Fecha de generación:]]></text>
+            </staticText>
+            <textField>
+                <reportElement x="150" y="65" width="180" height="15" style="DetailRow"/>
+                <textFieldExpression><![CDATA[new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date())]]></textFieldExpression>
+            </textField>
+
+            <staticText>
+                <reportElement x="10" y="85" width="140" height="15" style="Subtitle"/>
+                <text><![CDATA[Filtro aplicado:]]></text>
+            </staticText>
+            <textField isBlankWhenNull="true">
+                <reportElement x="150" y="85" width="395" height="15" style="DetailRow"/>
+                <textFieldExpression><![CDATA[$P{FILTER_DESCRIPTION} != null && !$P{FILTER_DESCRIPTION}.trim().isEmpty() ?
+                    $P{FILTER_DESCRIPTION} : "Todos los lotes"]]></textFieldExpression>
+            </textField>
+        </band>
+    </title>
+
+    <pageHeader>
+        <band height="30">
+            <staticText>
+                <reportElement x="0" y="10" width="555" height="20" style="Subtitle"/>
+                <textElement>
+                    <font size="14"/>
+                </textElement>
+                <text><![CDATA[Detalle de Lotes]]></text>
+            </staticText>
+            <line>
+                <reportElement x="0" y="29" width="555" height="1"/>
+                <graphicElement>
+                    <pen lineWidth="1.0" lineStyle="Solid" lineColor="#CCCCCC"/>
+                </graphicElement>
+            </line>
+        </band>
+    </pageHeader>
+
+    <columnHeader>
+        <!-- Etiquetas para la tabla de batches -->
+        <band height="25">
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="25" backcolor="#E9ECEF"/>
+                <graphicElement>
+                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                </graphicElement>
+            </rectangle>
+
+            <staticText>
+                <reportElement x="0" y="0" width="40" height="25" style="ColumnHeader"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <text><![CDATA[ID]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="40" y="0" width="130" height="25" style="ColumnHeader"/>
+                <textElement verticalAlignment="Middle">
+                    <paragraph leftIndent="5"/>
+                </textElement>
+                <text><![CDATA[Producto]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="170" y="0" width="60" height="25" style="ColumnHeader"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <text><![CDATA[Cantidad]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="230" y="0" width="70" height="25" style="ColumnHeader"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <text><![CDATA[Precio]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="300" y="0" width="85" height="25" style="ColumnHeader"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <text><![CDATA[Expiración]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="385" y="0" width="90" height="25" style="ColumnHeader"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <text><![CDATA[Serial]]></text>
+            </staticText>
+
+            <staticText>
+                <reportElement x="475" y="0" width="80" height="25" style="ColumnHeader"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <text><![CDATA[Creado]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+
+    <detail>
+        <band height="25" splitType="Stretch">
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="25" backcolor="#FFFFFF">
+                    <printWhenExpression><![CDATA[$V{REPORT_COUNT} % 2 == 0]]></printWhenExpression>
+                </reportElement>
+                <graphicElement>
+                    <pen lineWidth="0.5" lineColor="#F2F2F2"/>
+                </graphicElement>
+            </rectangle>
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="25" backcolor="#FAFAFA">
+                    <printWhenExpression><![CDATA[$V{REPORT_COUNT} % 2 != 0]]></printWhenExpression>
+                </reportElement>
+                <graphicElement>
+                    <pen lineWidth="0.5" lineColor="#F2F2F2"/>
+                </graphicElement>
+            </rectangle>
+
+            <textField>
+                <reportElement x="0" y="0" width="40" height="25" style="DetailRow"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
+            </textField>
+
+            <textField textAdjust="StretchHeight">
+                <reportElement x="40" y="0" width="130" height="25" style="DetailRow"/>
+                <textElement verticalAlignment="Middle">
+                    <paragraph leftIndent="5"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{product.name}]]></textFieldExpression>
+            </textField>
+
+            <textField>
+                <reportElement x="170" y="0" width="60" height="25" style="DetailRow"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{amount}]]></textFieldExpression>
+            </textField>
+
+            <textField pattern="#,##0.00">
+                <reportElement x="230" y="0" width="70" height="25" style="DetailRow"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
+            </textField>
+
+            <textField isBlankWhenNull="true">
+                <reportElement x="300" y="0" width="85" height="25" style="DetailRow"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{expirationDate} != null ?
+                    new java.text.SimpleDateFormat("dd/MM/yyyy").format(java.util.Date.from($F{expirationDate})) :
+                    ""]]></textFieldExpression>
+            </textField>
+
+            <textField textAdjust="StretchHeight">
+                <reportElement x="385" y="0" width="90" height="25" style="DetailRow"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{serialNumber}]]></textFieldExpression>
+            </textField>
+
+            <textField isBlankWhenNull="true">
+                <reportElement x="475" y="0" width="80" height="25" style="DetailRow"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{createdAt} != null ?
+                    new java.text.SimpleDateFormat("dd/MM/yyyy").format(java.util.Date.from($F{createdAt})) :
+                    ""]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+
+    <columnFooter>
+        <band height="0">
+        </band>
+    </columnFooter>
+
+    <pageFooter>
+        <band height="30">
+            <rectangle>
+                <reportElement x="0" y="0" width="555" height="30" backcolor="#F8F8F8"/>
+                <graphicElement>
+                    <pen lineWidth="0.5" lineColor="#CCCCCC"/>
+                </graphicElement>
+            </rectangle>
+
+            <textField>
+                <reportElement x="0" y="0" width="555" height="30" style="DetailRow"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="8"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Página " + $V{PAGE_NUMBER} + " de " + $V{PAGE_NUMBER}]]></textFieldExpression>
+            </textField>
+        </band>
+    </pageFooter>
+
+    <summary>
+        <band height="70">
+            <line>
+                <reportElement x="0" y="0" width="555" height="1"/>
+                <graphicElement>
+                    <pen lineWidth="1.0" lineStyle="Solid" lineColor="#CCCCCC"/>
+                </graphicElement>
+            </line>
+
+            <rectangle>
+                <reportElement x="355" y="10" width="200" height="30" backcolor="#2C3E50"/>
+                <graphicElement>
+                    <pen lineWidth="0"/>
+                </graphicElement>
+            </rectangle>
+
+            <staticText>
+                <reportElement x="365" y="10" width="100" height="30" forecolor="#FFFFFF" style="Total"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle"/>
+                <text><![CDATA[TOTAL UNIDADES:]]></text>
+            </staticText>
+
+            <textField>
+                <reportElement x="465" y="10" width="80" height="30" forecolor="#FFFFFF" style="Total"/>
+                <textElement textAlignment="Right" verticalAlignment="Middle">
+                    <paragraph rightIndent="10"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$V{TOTAL_AMOUNT}]]></textFieldExpression>
+            </textField>
+
+            <line>
+                <reportElement x="0" y="50" width="555" height="1"/>
+                <graphicElement>
+                    <pen lineWidth="1.0" lineStyle="Solid" lineColor="#CCCCCC"/>
+                </graphicElement>
+            </line>
+
+            <textField>
+                <reportElement x="0" y="55" width="555" height="15" style="DetailRow"/>
+                <textElement textAlignment="Center">
+                    <font size="8" isItalic="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA["Documento generado el " + new java.text.SimpleDateFormat("dd/MM/yyyy HH:mm").format(new java.util.Date())]]></textFieldExpression>
+            </textField>
+        </band>
+    </summary>
+</jasperReport>
