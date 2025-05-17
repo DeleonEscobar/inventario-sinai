@@ -20,33 +20,33 @@
     <div class="overflow-x-auto bg-white rounded-lg border border-slate-300">
         <table class="min-w-full divide-y divide-slate-200">
             <thead class="bg-slate-100">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Nombre</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Cliente</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Responsable</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Tipo</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Estado</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Creado</th>
-                    <th class="px-6 py-3 text-center text-xs font-medium text-slate-700 uppercase">Acciones</th>
-                </tr>
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Nota</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Cliente</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Responsable</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Tipo</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Estado</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Creado</th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-slate-700 uppercase">Acciones</th>
+            </tr>
             </thead>
             <tbody>
-                <tr th:each="movement : ${movements}">
-                    <td class="px-6 py-4" th:text="${movement.name != null ? movement.name : movement.notes}"></td>
-                    <td class="px-6 py-4" th:text="${movement.client.name}"></td>
-                    <td class="px-6 py-4" th:text="${movement.responsibleUser.name}"></td>
-                    <td class="px-6 py-4">
-                        <div th:class="'inline-block px-3 py-1 rounded-full text-sm font-semibold ' + ${movement.typeColorString}" th:text="${movement.typeName}"></div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div th:class="'inline-block px-3 py-1 rounded-full text-sm font-semibold ' + ${movement.statusColorString}" th:text="${movement.statusName}"></div>
-                    </td>
-                    <td class="px-6 py-4" th:text="${#dates.format(movement.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
-                    <td class="px-6 py-4 text-center">
-                        <a th:href="@{'/dashboard/admin/movements/' + ${movement.id}}" class="text-purple-600 hover:underline mr-2">Ver</a>
-                        <a th:href="@{'/dashboard/admin/movements/' + ${movement.id} + '/edit'}" class="text-blue-600 hover:underline">Editar</a>
-                    </td>
-                </tr>
+            <tr th:each="movement : ${movements}">
+                <td class="px-6 py-4" th:text="${movement.notes != null ? movement.notes : ''}"></td>
+                <td class="px-6 py-4" th:text="${movement.getClient().getName() != null ? movement.getClient().getName() : ''}"></td>
+                <td class="px-6 py-4" th:text="${movement.getResponsibleUser().getName() != null ? movement.getResponsibleUser().getName() : ''}"></td>
+                <td class="px-6 py-4">
+                    <div th:class="'inline-block px-3 py-1 rounded-full text-sm font-semibold ' + ${movement.typeColorString}" th:text="${movement.typeName}"></div>
+                </td>
+                <td class="px-6 py-4">
+                    <div th:class="'inline-block px-3 py-1 rounded-full text-sm font-semibold ' + ${movement.statusColorString}" th:text="${movement.statusName}"></div>
+                </td>
+                <td class="px-6 py-4" th:text="${#dates.format(movement.createdAt, 'dd/MM/yyyy HH:mm')}"></td>
+                <td class="px-6 py-4 text-center">
+                    <a th:href="@{'/dashboard/admin/movements/' + ${movement.id}}" class="text-purple-600 hover:underline mr-2">Ver</a>
+                    <a th:href="@{'/dashboard/admin/movements/' + ${movement.id} + '/edit'}" class="text-blue-600 hover:underline">Editar</a>
+                </td>
+            </tr>
             </tbody>
         </table>
     </div>

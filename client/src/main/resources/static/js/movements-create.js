@@ -3,6 +3,8 @@ $(document).ready(function() {
     console.log("jQuery version:", $.fn.jquery);
     
     const $clientSelect = $('#clientId');
+    const $typeSelect = $('#type');
+    const $clientSection = $clientSelect.closest('.mb-6');
     const $batchesLoading = $('#batchesLoading');
     const $batchesContainer = $('#batchesContainer');
     const $availableBatchesList = $('#availableBatchesList');
@@ -36,6 +38,29 @@ $(document).ready(function() {
         <span class="font-medium">💡 Nota:</span> La asignación de lotes es una tarea logística que normalmente realiza el encargado correspondiente. 
         Sin embargo, como gerente, puedes visualizar y asignar los lotes si es necesario.
     `);
+    
+    // Función para actualizar la sección del cliente según el tipo de movimiento
+    function updateClientSection() {
+        const movementType = $typeSelect.val();
+        const clientLabel = $clientSection.find('label[for="clientId"]');
+        const clientTitle = $clientSection.find('h3');
+        
+        if (movementType === 'traslado') {
+            clientLabel.text('Cliente (Opcional)');
+            $clientSelect.prop('required', false);
+            clientTitle.text('2. Información del Cliente (Opcional para Traslados)');
+        } else {
+            clientLabel.text('Cliente');
+            $clientSelect.prop('required', true);
+            clientTitle.text('2. Información del Cliente');
+        }
+    }
+    
+    // Actualizar la sección del cliente al cambiar el tipo de movimiento
+    $typeSelect.on('change', updateClientSection);
+    
+    // Actualizar la sección del cliente al cargar la página
+    updateClientSection();
     
     // Cargar todos los lotes disponibles al iniciar
     loadAvailableBatches();
@@ -171,9 +196,10 @@ $(document).ready(function() {
     window.validateForm = function() {
         const clientId = $('#clientId').val();
         const responsibleId = $('#responsibleId').val();
-        const name = $('#name').val();
+        const notes = $('#notes').val();
+        const type = $('#type').val();
         
-        if (!clientId) {
+        if (type == 'pedido' && !clientId) {
             alert('Por favor seleccione un cliente.');
             return false;
         }
@@ -183,8 +209,8 @@ $(document).ready(function() {
             return false;
         }
         
-        if (!name) {
-            alert('Por favor ingrese un nombre para el movimiento.');
+        if (!notes) {
+            alert('Por favor ingrese una nota para el movimiento.');
             return false;
         }
         

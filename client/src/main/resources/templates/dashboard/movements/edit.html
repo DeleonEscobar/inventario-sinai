@@ -26,7 +26,7 @@
 
         <div class="text-sm text-slate-500 bg-slate-100 border border-slate-300 rounded-md p-4 mb-4">
             <span class="font-medium">ℹ️ Nota:</span>
-            Solo es posible actualizar el <b>estado</b> del movimiento o su <b>nombre</b>. 
+            Solo es posible actualizar el <b>estado</b> del movimiento o su <b>nota</b>. 
             Si necesitas cambiar el <b>cliente</b> o el <b>responsable</b>, por razones logísticas y de auditoría,
             debes <span class="italic">cancelar este movimiento</span> y crear uno nuevo.
         </div>
@@ -40,11 +40,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Campo editable para Nombre -->
                 <div>
-                    <label for="name" class="block text-sm font-semibold text-slate-700 mb-2">Nombre del movimiento</label>
-                    <input type="text" id="name" name="name"
-                        th:value="${movement.name}"
+                    <label for="notes" class="block text-sm font-semibold text-slate-700 mb-2">Nota del movimiento</label>
+                    <input type="text" id="notes" name="notes"
+                        th:value="${movement.notes}"
                         class="block w-full border border-slate-300 rounded px-3 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                        placeholder="Ingrese el nombre del movimiento" required />
+                        placeholder="Ingrese la nota del movimiento" required />
                 </div>
 
                 <div>

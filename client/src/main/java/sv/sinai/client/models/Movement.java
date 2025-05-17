@@ -7,7 +7,7 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Movement {
     private Long id;
-    private String name;
+    private String notes;
     private Integer type;
     private Integer status;
     private Client client;
@@ -27,12 +27,12 @@ public class Movement {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getNotes() {
+        return notes;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 
     public Integer getType() {
