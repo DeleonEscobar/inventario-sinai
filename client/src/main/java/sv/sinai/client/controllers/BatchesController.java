@@ -34,6 +34,8 @@ public class BatchesController extends BaseController {
     public String batches(HttpSession session, Model model) {
         User user = getSessionUser(session);
         model.addAttribute("user", user);
+        model.addAttribute("pageTitle", "Gestión de Lotes");
+        model.addAttribute("activePage", "batches");
         return "dashboard/batches";
     }
 

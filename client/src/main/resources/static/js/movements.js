@@ -4,8 +4,17 @@ import { getTokenRequest } from '/js/utils/getTokenRequest.js';
 import { formatDate } from '/js/utils/formatDate.js';
 
 const apiEndpoint = 'http://localhost:8081/api/movements';
+let isEmployee = false;
 
 $(document).ready(function() {
+    // Detectar si el usuario es empleado
+    const userData = $('#user-data');
+    if (userData.length > 0) {
+        isEmployee = userData.data('user-role') === 'EMPLOYEE';
+    }
+
+    console.log(isEmployee);
+
     // Inicializar la tabla de movimientos
     fetchMovements();
 
@@ -15,7 +24,7 @@ $(document).ready(function() {
             
             // Obtener los movimientos desde el servidor
             $.ajax({
-                url: '/dashboard/admin/movements/api/list',
+                url: isEmployee ? '/dashboard/employee/movements/api/list' : '/dashboard/admin/movements/api/list',
                 method: 'GET',
                 dataType: 'json',
                 success: function(movements) {
@@ -40,17 +49,32 @@ $(document).ready(function() {
         
         $tbody.empty();
         $.each(movements, function(i, movement) {
+            // Determinar los botones a mostrar según el rol
+            let actionButtons = '';
+            
+            if (isEmployee) {
+                // Si es empleado, solo mostrar el botón de editar con URL específica para empleados
+                actionButtons = `<a href="/dashboard/employee/movements/${movement.id}" class="edit-btn text-purple-600 hover:underline">Ver Detalles</a>`;
+            } else {
+                // Si es admin, mostrar ambos botones con URLs de admin
+                actionButtons = `
+                    <a href="/dashboard/admin/movements/${movement.id}" class="view-btn text-blue-600 hover:underline mr-2">Ver</a>
+                    <a href="/dashboard/admin/movements/${movement.id}/edit" class="edit-btn text-blue-600 hover:underline mr-2">Editar</a>
+                `;
+            }
+            
             $tbody.append(`
                 <tr>
-                    <td class="px-6 py-4">${movement.name}</td>
-                    <td class="px-6 py-4">${movement.responsible.name}</td>
-                    <td class="px-6 py-4">${movement.client.name}</td>
-                    <td class="px-6 py-4">${movement.status}</td>
-                    <td class="px-6 py-4">${movement.batchCount || 0}</td>
+                    <td class="px-6 py-4">${movement.notes || ''}</td>
+                    <td class="px-6 py-4">${movement.responsibleUser ? movement.responsibleUser.name : ''}</td>
+                    <td class="px-6 py-4">${movement.client ? movement.client.name : '-'}</td>
+                    <td class="px-6 py-4">
+                        <div class="${movement.statusColorString || ''} inline-block px-3 py-1 rounded-full text-sm font-semibold">${movement.statusName || ''}</div>
+                    </td>
+                    <td class="px-6 py-4">${movement.batches ? movement.batches.length : 0}</td>
                     <td class="px-6 py-4">${formatDate(movement.createdAt)}</td>
                     <td class="px-6 py-4 text-center">
-                        <a href="/dashboard/admin/movements/${movement.id}" class="view-btn text-blue-600 hover:underline mr-2">Ver</a>
-                        <a href="/dashboard/admin/movements/edit/${movement.id}" class="edit-btn text-blue-600 hover:underline mr-2">Editar</a>
+                        ${actionButtons}
                     </td>
                 </tr>
             `);

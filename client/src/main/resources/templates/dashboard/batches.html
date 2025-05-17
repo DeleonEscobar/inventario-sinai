@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:th="http://www.thymeleaf.org"
       layout:decorate="~{layouts/layoutDashboard.html}">
 <head>
     <title>Lotes | Inventario Pan Sinai</title>
@@ -7,8 +8,16 @@
 </head>
 <body>
 <div class="w-full md:p-6 md:pt-16" layout:fragment="custom-content">
+
+    <!-- Metadata de usuario -->
+    <div id="user-data"
+        th:data-user-role="${user.role}"
+        style="display: none;">
+    </div>
+
     <div class="flex justify-between items-center mb-6">
-        <h2 class="text-2xl font-bold">Gestión de Lotes</h2>
+        <!-- <h2 class="text-2xl font-bold">Gestión de Lotes</h2> -->
+        <div></div>
         <button id="btn-add-batch" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded transition">Agregar Lote</button>
     </div>
     <div class="overflow-x-auto bg-white rounded-lg border border-slate-300">

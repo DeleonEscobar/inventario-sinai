@@ -3,6 +3,7 @@ import { formatDate } from '/js/utils/formatDate.js';
 
 const apiEndpoint = 'http://localhost:8081/api/batches';
 let editing = false;
+let isEmployee = false;
 let productsList = [];
 
 async function fetchProductsForSelect() {
@@ -43,6 +44,18 @@ function openModal(edit = false, batch = null) {
     $('#modal-title').text(edit ? 'Editar Lote' : 'Agregar Lote');
     $('#batch-form')[0].reset();
     $('#batch-id').val('');
+    
+    // Eliminar cualquier nota anterior sobre el precio
+    $('.price-note').remove();
+    
+    // Habilitar el campo de precio por defecto
+    $('#batch-price').prop('disabled', false);
+    
+    // Si es empleado Y está editando, deshabilitar el campo de precio
+    if (isEmployee && edit) {
+        $('#batch-price').prop('disabled', true);
+        $('#batch-price').after('<p class="price-note text-xs text-red-500 mt-1">No puedes modificar el precio de un lote existente</p>');
+    }
     
     if (edit && batch) {
         $('#batch-id').val(batch.id);
@@ -98,6 +111,19 @@ function renderBatches(batches) {
     $tbody.empty();
     
     $.each(batches, (i, batch) => {
+        let actionButtons = '';
+        
+        if (isEmployee) {
+            actionButtons = `<button class="edit-btn text-green-600 hover:underline mr-2" data-id="${batch.id}">Editar</button>`;
+        } else {
+            actionButtons = `
+                <button class="edit-btn text-green-600 hover:underline mr-2" data-id="${batch.id}">Editar</button>
+                <button class="delete-btn text-red-600 hover:underline" data-id="${batch.id}">Eliminar</button>
+                <button class="goto-product-btn text-blue-600 hover:underline ml-2" 
+                    data-product-id="${batch.product ? batch.product.id : ''}">Editar Producto</button>
+            `;
+        }
+        
         $tbody.append(`
             <tr>
                 <td class="px-6 py-4">${batch.serialNumber}</td>
@@ -108,10 +134,7 @@ function renderBatches(batches) {
                 <td class="px-6 py-4">${formatDate(batch.createdAt)}</td>
                 <td class="px-6 py-4">${formatDate(batch.updatedAt)}</td>
                 <td class="px-6 py-4 text-center">
-                    <button class="edit-btn text-green-600 hover:underline mr-2" data-id="${batch.id}">Editar</button>
-                    <button class="delete-btn text-red-600 hover:underline" data-id="${batch.id}">Eliminar</button>
-                    <button class="goto-product-btn text-blue-600 hover:underline ml-2" 
-                        data-product-id="${batch.product ? batch.product.id : ''}">Editar Producto</button>
+                    ${actionButtons}
                 </td>
             </tr>
         `);
@@ -204,12 +227,29 @@ $('#batch-form').on('submit', async function(e) {
             serialNumber: $('#batch-serial').val(),
             product: { id: productId },
             amount: parseInt($('#batch-amount').val(), 10),
-            price: parseFloat($('#batch-price').val()),
             expirationDate
         };
         
-        if (isNaN(batch.amount) || isNaN(batch.price)) {
-            alert('Cantidad y precio deben ser valores numéricos válidos.');
+        // Si es un empleado editando un lote, mantener el precio original
+        if (isEmployee && editing && id) {
+            // Obtener el lote actual para mantener el precio original
+            const currentBatch = await $.ajax({
+                url: `${apiEndpoint}/${id}`,
+                headers: { 'Authorization': `Bearer ${await getTokenRequest()}` }
+            });
+            batch.price = currentBatch.price;
+        } else {
+            // Si no es un empleado editando un lote, usar el precio del formulario
+            batch.price = parseFloat($('#batch-price').val());
+            
+            if (isNaN(batch.price)) {
+                alert('El precio debe ser un valor numérico válido.');
+                return;
+            }
+        }
+        
+        if (isNaN(batch.amount)) {
+            alert('La cantidad debe ser un valor numérico válido.');
             return;
         }
         
@@ -230,8 +270,15 @@ $('#batch-form').on('submit', async function(e) {
         closeModal();
         fetchBatches();
     } catch (err) {
+        console.error('Error al guardar el lote:', err);
         alert('Error al guardar el lote');
     }
 });
 
-$(document).ready(fetchBatches);
+$(document).ready(function() {
+    const userData = $('#user-data');
+    if (userData.length > 0) {
+        isEmployee = userData.data('user-role') === 'EMPLOYEE';
+    }
+    fetchBatches();
+});

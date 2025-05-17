@@ -4,7 +4,8 @@
     <title th:text="${pageTitle}">Detalle de Movimiento</title>
 </head>
 <body>
-    <div class="w-full md:p-6 md:pt-16" layout:fragment="custom-content">
+    <div class="w-full md:p-4 md:pt-16" layout:fragment="custom-content">
+        <!-- Header con acciones -->
         <div class="mb-6 flex items-center justify-between">
             <!-- <h2 class="text-2xl font-bold mb-2" th:text="${pageTitle}">Detalle de Movimiento</h2> -->
 
@@ -19,58 +20,132 @@
                 <span class="text-xl mr-1">✏️</span>
                 Editar
             </a>
-        </div>
-    
-        <div class="bg-white rounded-lg shadow p-6 mb-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div>
-                    <b>Nota:</b>
-                    <div class="text-slate-700" th:text="${movement.notes != null ? movement.notes : ''}"></div>
-                </div>
-                <div>
-                    <b>Cliente:</b>
-                    <div class="text-slate-700" th:text="${movement.client.name}"></div>
-                </div>
-                <div>
-                    <b>Responsable:</b>
-                    <div class="text-slate-700" th:text="${movement.responsibleUser.name}"></div>
-                </div>
-                <div>
-                    <b>Creado:</b>
-                    <div class="text-slate-700" th:text="${#dates.format(movement.createdAt, 'dd/MM/yyyy HH:mm')}"></div>
-                </div>
-                <div>
-                    <b>Estado:</b>
-                    <div th:class="'inline-block px-3 py-1 rounded-full text-sm font-semibold ' + ${movement.statusColorString}" th:text="${movement.statusName}"></div>
-                </div>
-                <div>
-                    <b>Tipo:</b>
-                    <div th:class="'inline-block px-3 py-1 rounded-full text-sm font-semibold ' + ${movement.typeColorString}" th:text="${movement.typeName}"></div>
+    </div>
+
+    <!-- Estado y Tipo con indicadores visuales -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="px-4 py-3 bg-slate-50 font-semibold flex items-center border-b border-slate-300">
+                <svg class="w-5 h-5 mr-2 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                Tipo de Movimiento
+            </div>
+            <div class="p-4 w-full">
+                <div th:class="'px-6 py-3 rounded-lg text-center shadow-sm ' + ${movement.typeColorString}" style="min-width: 150px;">
+                    <div class="font-bold text-xl mb-1" th:text="${movement.typeName}"></div>
+                    <div class="text-sm opacity-75">Creado: <span th:text="${#dates.format(movement.createdAt, 'dd/MM/yyyy HH:mm')}"></span></div>
                 </div>
             </div>
-    
-            <div>
-                <h3 class="text-lg font-bold mb-2">Lotes asociados:</h3>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-slate-200 text-sm">
-                        <thead class="bg-slate-100 text-slate-700">
-                            <tr>
-                                <th class="px-4 py-2 text-left"># Serie</th>
-                                <th class="px-4 py-2 text-left">Producto</th>
-                                <th class="px-4 py-2 text-left">Cantidad</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="batch : ${movement.batches}" class="hover:bg-slate-50">
-                                <td class="px-4 py-2" th:text="${batch.serialNumber}"></td>
-                                <td class="px-4 py-2" th:text="${batch.product.name}"></td>
-                                <td class="px-4 py-2" th:text="${batch.amount}"></td>
-                            </tr>
-                        </tbody>
-                    </table>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="px-4 py-3 bg-slate-50 font-semibold flex items-center border-b border-slate-300">
+                <svg class="w-5 h-5 mr-2 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Estado del Movimiento
+            </div>
+            <div class="p-4 w-full">
+                <div th:class="'px-6 py-3 rounded-lg text-center shadow-sm ' + ${movement.statusColorString}" style="min-width: 150px;">
+                    <div class="font-bold text-xl mb-1" th:text="${movement.statusName}"></div>
+                    <div class="text-sm opacity-75">Actualizado: <span th:text="${#dates.format(movement.updatedAt, 'dd/MM/yyyy HH:mm')}"></span></div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Información principal del movimiento -->
+    <div class="bg-white rounded-lg shadow-md p-4 mb-6">
+        <h3 class="text-lg font-bold mb-4 pb-2 border-b border-slate-300 flex items-center ">
+            <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Información del Movimiento
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <!-- Nota -->
+            <div class="bg-slate-50 p-2 rounded-lg shadow-inner">
+                <div class="text-sm text-slate-500 mb-1">Nota:</div>
+                <div class="text-slate-700 font-medium min-h-16" th:text="${movement.notes != null ? movement.notes : 'Sin notas'}"></div>
+            </div>
+
+            <!-- Responsable -->
+            <div class="bg-slate-50 p-2 rounded-lg shadow-inner">
+                <div class="text-sm text-slate-500 mb-1">Responsable:</div>
+                <div class="flex items-center">
+                    <div class="bg-purple-100 text-purple-700 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
+                    <div class="text-slate-700 font-medium" th:text="${movement.responsibleUser.name}"></div>
+                </div>
+            </div>
+            
+            <!-- Cliente (si existe) -->
+            <div th:if="${movement.client != null}" class="bg-slate-50 p-2 rounded-lg shadow-inner">
+                <div class="text-sm text-slate-500 mb-1">Cliente:</div>
+                <div class="flex items-center">
+                    <div class="bg-blue-100 text-blue-700 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                    </div>
+                    <div class="text-slate-700 font-medium" th:text="${movement.client.name}"></div>
+                </div>
+            </div>
+
+            <!-- Dirección del Cliente (si existe) -->
+            <div th:if="${movement.client != null}" class="bg-slate-50 p-2 rounded-lg shadow-inner">
+                <div class="text-sm text-slate-500 mb-1">Dirección:</div>
+                <div class="flex items-center">
+                    <div class="bg-green-100 text-green-700 rounded-full w-10 h-10 flex items-center justify-center mr-3">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+                    <div class="text-slate-700 font-medium" th:text="${movement.client.address}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lotes asociados -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="px-4 py-3 bg-slate-50 font-semibold flex items-center border-b border-slate-300">
+            <svg class="w-5 h-5 mr-2 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+            </svg>
+            Lotes Asociados
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200 text-sm">
+                <thead class="bg-slate-100 text-slate-700">
+                    <tr>
+                        <th class="px-4 py-3 text-left font-semibold"># Serie</th>
+                        <th class="px-4 py-3 text-left font-semibold">Producto</th>
+                        <th class="px-4 py-3 text-left font-semibold">Cantidad</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200">
+                    <tr th:each="batch, iterStat : ${movement.batches}" th:class="${iterStat.odd} ? 'bg-slate-50' : 'bg-white'" class="hover:bg-purple-50 transition-colors">
+                        <td class="px-4 py-3 font-medium" th:text="${batch.serialNumber}"></td>
+                        <td class="px-4 py-3" th:text="${batch.product.name}"></td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full font-medium" th:text="${batch.amount}"></span>
+                        </td>
+                    </tr>
+                    <tr th:if="${movement.batches.isEmpty()}">
+                        <td colspan="3" class="px-4 py-4 text-center text-slate-500">No hay lotes asociados a este movimiento</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 </body>
-</html> 
+</html>

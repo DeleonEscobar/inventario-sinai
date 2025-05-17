@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layoutDashboard.html}">
+<head>
+    <title>Detalles de Movimiento | Inventario Pan Sinai</title>
+</head>
+<body>
+<div class="w-full md:p-6 md:pt-16" layout:fragment="custom-content">
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <!-- <h2 class="text-2xl font-bold">Detalles de Movimiento</h2> -->
+            <div></div>
+            <p class="text-slate-600">ID: <span th:text="${movement.id}"></span></p>
+        </div>
+        <div>
+            <a href="/dashboard/employee/movements" class="bg-slate-500 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded transition">Volver</a>
+        </div>
+    </div>
+    
+    <div th:if="${success}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+        <span class="block sm:inline" th:text="${success}"></span>
+    </div>
+
+    <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+        <span class="block sm:inline" th:text="${error}"></span>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <!-- Información del Movimiento -->
+        <div class="bg-white rounded-lg border border-slate-300 p-6">
+            <h3 class="text-lg font-bold mb-4">Información del Movimiento</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <p class="text-sm text-slate-500">Tipo</p>
+                    <div th:class="'inline-block px-3 py-1 rounded-full text-sm font-semibold ' + ${movement.typeColorString}" th:text="${movement.typeName}"></div>
+                </div>
+                <div>
+                    <p class="text-sm text-slate-500">Estado</p>
+                    <div th:class="'inline-block px-3 py-1 rounded-full text-sm font-semibold ' + ${movement.statusColorString}" th:text="${movement.statusName}"></div>
+                </div>
+                <div>
+                    <p class="text-sm text-slate-500">Fecha de Creación</p>
+                    <p class="font-medium" th:text="${#dates.format(movement.createdAt, 'dd/MM/yyyy HH:mm')}"></p>
+                </div>
+                <div th:if="${movement.client != null}">
+                    <p class="text-sm text-slate-500">Cliente</p>
+                    <p class="font-medium" th:text="${movement.client.name}"></p>
+                </div>
+                <div>
+                    <p class="text-sm text-slate-500">Creado por</p>
+                    <p class="font-medium" th:text="${movement.createdByUser.name}"></p>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <p class="text-sm text-slate-500">Notas</p>
+                <p class="font-medium whitespace-pre-line" th:text="${movement.notes != null ? movement.notes : 'Sin notas'}"></p>
+            </div>
+        </div>
+        
+        <!-- Actualizar Estado -->
+        <div class="bg-white rounded-lg border border-slate-300 p-6">
+            <h3 class="text-lg font-bold mb-4">Actualizar Estado</h3>
+            
+            <form th:action="@{'/dashboard/employee/movements/' + ${movement.id} + '/update-status'}" method="post">
+                <div class="space-y-4">
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-slate-700">Estado</label>
+                        <select id="status" name="status" class="mt-1 block w-full border border-slate-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="1" th:selected="${movement.status == 1}">Pendiente</option>
+                            <option value="2" th:selected="${movement.status == 2}">En Proceso</option>
+                            <option value="3" th:selected="${movement.status == 3}">Completado</option>
+                            <option value="4" th:selected="${movement.status == 4}">Cancelado</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="notes" class="block text-sm font-medium text-slate-700">Notas</label>
+                        <textarea id="notes" name="notes" rows="4" class="mt-1 block w-full border border-slate-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-purple-500" th:text="${movement.notes}"></textarea>
+                    </div>
+                    
+                    <div class="w-full">
+                        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2  w-full px-4 rounded transition">Actualizar Estado</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Lotes Asociados -->
+    <div class="bg-white rounded-lg border border-slate-300 p-6 mt-6">
+        <h3 class="text-lg font-bold mb-4">Lotes Asociados</h3>
+        
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-slate-200">
+                <thead class="bg-slate-100">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Serial</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Producto</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Cantidad</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Precio</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Vence</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-200">
+                <tr th:if="${#lists.isEmpty(movement.batches)}">
+                    <td colspan="5" class="px-6 py-4 text-center text-slate-500">No hay lotes asociados a este movimiento</td>
+                </tr>
+                <tr th:each="batch : ${movement.batches}">
+                    <td class="px-6 py-4" th:text="${batch.serialNumber}"></td>
+                    <td class="px-6 py-4" th:text="${batch.product?.name}"></td>
+                    <td class="px-6 py-4" th:text="${batch.amount}"></td>
+                    <td class="px-6 py-4" th:text="${'$' + batch.price}"></td>
+                    <td class="px-6 py-4" th:text="${#dates.format(batch.expirationDate, 'dd/MM/yyyy')}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html> 

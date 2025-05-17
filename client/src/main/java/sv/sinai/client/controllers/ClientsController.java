@@ -38,6 +38,8 @@ public class ClientsController extends BaseController {
     public String clients(HttpSession session, Model model) {
         User user = getSessionUser(session);
         model.addAttribute("user", user);
+        model.addAttribute("pageTitle", "Gestión de Clientes");
+        model.addAttribute("activePage", "clients");
         return "dashboard/clients";
     }
 

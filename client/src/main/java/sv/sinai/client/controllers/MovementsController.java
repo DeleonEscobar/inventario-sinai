@@ -60,7 +60,8 @@ public class MovementsController extends BaseController {
     public String movements(HttpSession session, Model model) {
         User user = getSessionUser(session);
         model.addAttribute("user", user);
-        // model.addAttribute("pageTitle", "Gestión de Movimientos");
+        model.addAttribute("pageTitle", "Gestión de Movimientos");
+        model.addAttribute("activePage", "movements");
 
         String token = getTokenFromSession(session);
         HttpHeaders headers = new HttpHeaders();

@@ -56,7 +56,7 @@ function renderClients(clients) {
                 <td class="px-6 py-4">${formatDate(client.createdAt)}</td>
                 <td class="px-6 py-4">${formatDate(client.updatedAt)}</td>
                 <td class="px-6 py-4 text-center">
-                    <button class="edit-btn text-blue-600 hover:underline mr-2" data-id="${client.id}">Editar</button>
+                    <button class="edit-btn text-orange-300 hover:underline mr-2" data-id="${client.id}">Editar</button>
                     <button class="delete-btn text-red-600 hover:underline" data-id="${client.id}">Eliminar</button>
                 </td>
             </tr>

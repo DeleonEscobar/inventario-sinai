@@ -41,6 +41,8 @@ public class ProductsController extends BaseController {
     public String products(HttpSession session, Model model) {
         User user = getSessionUser(session);
         model.addAttribute("user", user);
+        model.addAttribute("pageTitle", "Gestión de Productos");
+        model.addAttribute("activePage", "products");
         return "dashboard/products";
     }
 
