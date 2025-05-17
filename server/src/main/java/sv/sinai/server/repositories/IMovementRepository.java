@@ -21,19 +21,6 @@ public interface IMovementRepository extends JpaRepository<Movement, Integer> {
     List<Movement> findAllByResponsibleUserId(Integer userId);
     Long countByStatus(Integer status);
 
-    @Query(value = """
-            SELECT new map(
-                m.id as id,
-                m.notes as description,
-                m.createdAt as timestamp,
-                m.type as type,
-                m.status as status,
-                CONCAT(u.name, ' (', u.username, ')') as responsibleUser
-            )
-            FROM Movement m
-            JOIN User u ON m.responsibleUser.id = u.id
-            WHERE m.createdAt >= :date
-            ORDER BY m.createdAt DESC
-            """)
-    List<Map<String, Object>> findRecentActivities(@Param("date") Instant date);
+    Integer countMovementByStatus(Integer status);
+    List<Movement> findTop5ByCreatedByUserIdAndStatusInOrderByUpdatedAtDesc(Integer userId, List<Integer> statuses);
 }
