@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -26,6 +27,11 @@ import sv.sinai.client.models.User;
 import sv.sinai.client.models.Movement;
 import sv.sinai.client.models.Client;
 import sv.sinai.client.models.Batch;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/dashboard")
@@ -70,146 +76,59 @@ public class MovementsController extends BaseController {
         return "dashboard/movements/index";
     }
     
-    // Crear nuevo movimiento - Paso 1: Cliente
+    // Crear nuevo movimiento (vista única)
     @GetMapping("/admin/movements/create")
     @PreAuthorize("hasAuthority('ACCESS_ADMIN')")
-    public String createMovementStep1(HttpSession session, Model model) {
+    public String createMovement(HttpSession session, Model model) {
         User user = getSessionUser(session);
         model.addAttribute("user", user);
-        model.addAttribute("pageTitle", "Nuevo Movimiento - Seleccionar Cliente");
-        model.addAttribute("step", 1);
-        // Obtener clientes
+        model.addAttribute("pageTitle", "Nuevo Movimiento");
+        
         String token = getTokenFromSession(session);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
         HttpEntity<String> entity = new HttpEntity<>(headers);
-        ResponseEntity<Client[]> response = restTemplate.exchange(
+        
+        // Obtener clientes
+        ResponseEntity<Client[]> clientsResponse = restTemplate.exchange(
             BASE_URL + "/clients",
             HttpMethod.GET,
             entity,
             Client[].class
         );
-        model.addAttribute("clients", response.getBody());
-        return "dashboard/movements/create";
-    }
-    
-    // Crear nuevo movimiento - Paso 2: Lotes
-    @GetMapping("/admin/movements/create/step2")
-    @PreAuthorize("hasAuthority('ACCESS_ADMIN')")
-    public String createMovementStep2(
-        @RequestParam("clientId") Long clientId,
-        HttpSession session, 
-        Model model
-    ) {
-        User user = getSessionUser(session);
-        model.addAttribute("user", user);
-        model.addAttribute("pageTitle", "Nuevo Movimiento - Seleccionar Lotes");
-        model.addAttribute("step", 2);
-        model.addAttribute("clientId", clientId);
-        String token = getTokenFromSession(session);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + token);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
-        // Obtener lotes del cliente
-        ResponseEntity<Batch[]> response = restTemplate.exchange(
-            BASE_URL + "/batches?clientId=" + clientId,
-            HttpMethod.GET,
-            entity,
-            Batch[].class
-        );
-        model.addAttribute("batches", response.getBody());
-        return "dashboard/movements/create";
-    }
-    
-    // Crear nuevo movimiento - Paso 3: Responsable
-    @GetMapping("/admin/movements/create/step3")
-    @PreAuthorize("hasAuthority('ACCESS_ADMIN')")
-    public String createMovementStep3(
-        @RequestParam("clientId") Long clientId,
-        @RequestParam("batchIds") String batchIds,
-        HttpSession session, 
-        Model model
-    ) {
-        User user = getSessionUser(session);
-        model.addAttribute("user", user);
-        model.addAttribute("pageTitle", "Nuevo Movimiento - Seleccionar Responsable");
-        model.addAttribute("step", 3);
-        model.addAttribute("clientId", clientId);
-        model.addAttribute("batchIds", batchIds);
-        String token = getTokenFromSession(session);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + token);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+        model.addAttribute("clients", clientsResponse.getBody());
+        
         // Obtener responsables (usuarios con rol 2)
-        ResponseEntity<User[]> response = restTemplate.exchange(
+        ResponseEntity<User[]> responsiblesResponse = restTemplate.exchange(
             BASE_URL + "/users?role=2",
             HttpMethod.GET,
             entity,
             User[].class
         );
-        model.addAttribute("responsibles", response.getBody());
+        model.addAttribute("responsibles", responsiblesResponse.getBody());
+        
         return "dashboard/movements/create";
     }
     
-    // Crear nuevo movimiento - Paso 4: Confirmación
-    @GetMapping("/admin/movements/create/confirm")
+    // API para obtener lotes disponibles (para AJAX)
+    @GetMapping("/admin/movements/api/batches")
     @PreAuthorize("hasAuthority('ACCESS_ADMIN')")
-    public String createMovementConfirm(
-        @RequestParam("clientId") Long clientId,
-        @RequestParam("batchIds") String batchIds,
-        @RequestParam("responsibleId") Long responsibleId,
-        HttpSession session, 
-        Model model
-    ) {
-        User user = getSessionUser(session);
-        model.addAttribute("user", user);
-        model.addAttribute("pageTitle", "Nuevo Movimiento - Confirmar");
-        model.addAttribute("step", 4);
-        model.addAttribute("clientId", clientId);
-        model.addAttribute("batchIds", batchIds);
-        model.addAttribute("responsibleId", responsibleId);
-        
-        // Obtener datos para resumen
+    @ResponseBody
+    public Batch[] getAvailableBatches(HttpSession session) {
         String token = getTokenFromSession(session);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
         HttpEntity<String> entity = new HttpEntity<>(headers);
         
-        // Cliente
-        ResponseEntity<Object> clientResponse = restTemplate.exchange(
-            BASE_URL + "/clients/" + clientId,
+        // Get all available batches not associated with any movement
+        ResponseEntity<Batch[]> response = restTemplate.exchange(
+            BASE_URL + "/batches/available",
             HttpMethod.GET,
             entity,
-            Object.class
+            Batch[].class
         );
-        model.addAttribute("client", clientResponse.getBody());
         
-        // Responsable
-        ResponseEntity<Object> responsibleResponse = restTemplate.exchange(
-            BASE_URL + "/users/" + responsibleId,
-            HttpMethod.GET,
-            entity,
-            Object.class
-        );
-        model.addAttribute("responsible", responsibleResponse.getBody());
-        
-        // Lotes
-        String[] batchIdArray = batchIds.split(",");
-        Object[] selectedBatches = new Object[batchIdArray.length];
-        
-        for (int i = 0; i < batchIdArray.length; i++) {
-            ResponseEntity<Object> batchResponse = restTemplate.exchange(
-                BASE_URL + "/batches/" + batchIdArray[i],
-                HttpMethod.GET,
-                entity,
-                Object.class
-            );
-            selectedBatches[i] = batchResponse.getBody();
-        }
-        
-        model.addAttribute("selectedBatches", selectedBatches);
-        
-        return "dashboard/movements/create";
+        return response.getBody();
     }
     
     // Procesar la creación del movimiento
@@ -217,28 +136,49 @@ public class MovementsController extends BaseController {
     @PreAuthorize("hasAuthority('ACCESS_ADMIN')")
     public String saveMovement(
         @RequestParam("clientId") Long clientId,
-        @RequestParam("batchIds") String batchIds,
+        @RequestParam(value = "batchIds", required = false) String batchIds,
         @RequestParam("responsibleId") Long responsibleId,
         @RequestParam("name") String name,
         HttpSession session,
         RedirectAttributes redirectAttributes
     ) {
         try {
+            User user = getSessionUser(session);
             String token = getTokenFromSession(session);
             HttpHeaders headers = new HttpHeaders();
             headers.set("Authorization", "Bearer " + token);
             headers.set("Content-Type", "application/json");
             
-            // Crear el objeto de movimiento
-            Movement movement = new Movement();
-            movement.setName(name);
-            movement.setType(1);
-            movement.setStatus(1);
+            // Lotes son opcionales - el encargado de almacén puede añadirlos posteriormente
+            List<Integer> batchesList = new ArrayList<>();
+            if (batchIds != null && !batchIds.isEmpty()) {
+                // Convertir string de IDs de lotes a lista de enteros
+                String[] batchIdArray = batchIds.split(",");
+                for (String batchId : batchIdArray) {
+                    batchesList.add(Integer.parseInt(batchId));
+                }
+            }
             
-            // Agregar cliente, responsable y lotes
-            // Nota: Este código es simplificado, deberías construir el objeto completo
+            // Crear objetos para el request
+            Client client = new Client();
+            client.setId(clientId);
             
-            HttpEntity<Movement> requestEntity = new HttpEntity<>(movement, headers);
+            User responsible = new User();
+            responsible.setId(responsibleId);
+            
+            // Crear el objeto de request de movimiento
+            Map<String, Object> requestMap = new HashMap<>();
+            requestMap.put("notes", name);  // Usar el nombre como notas
+            requestMap.put("name", name);
+            requestMap.put("type", 1);  // Tipo predeterminado
+            requestMap.put("status", 1);  // Estado inicial (Pendiente)
+            requestMap.put("client", client);
+            requestMap.put("responsibleUser", responsible);
+            requestMap.put("createdByUser", user);
+            requestMap.put("batches", batchesList);
+            requestMap.put("createdAt", Instant.now());
+            
+            HttpEntity<Map<String, Object>> requestEntity = new HttpEntity<>(requestMap, headers);
             
             ResponseEntity<Movement> response = restTemplate.exchange(
                 BASE_URL + "/movements",
@@ -251,8 +191,9 @@ public class MovementsController extends BaseController {
             return "redirect:/dashboard/admin/movements";
             
         } catch (Exception e) {
+            logger.error("Error al crear el movimiento", e);
             redirectAttributes.addFlashAttribute("error", "Error al crear el movimiento: " + e.getMessage());
-            return "redirect:/dashboard/admin/movements";
+            return "redirect:/dashboard/admin/movements/create";
         }
     }
     

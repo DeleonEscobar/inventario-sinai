@@ -1,114 +1,157 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" layout:decorate="~{layouts/layoutDashboard.html}">
 <head>
-    <title th:text="${pageTitle}">Nuevo Movimiento</title>
+    <title>Nuevo Movimiento</title>
+    <link rel="stylesheet" th:href="@{/css/movements-create.css}">
+    <script th:src="@{/js/movements-create.js}"></script>
 </head>
 <body>
 <div class="w-full md:p-6 md:pt-16" layout:fragment="custom-content">
     <div class="mb-6">
-        <h2 class="text-2xl font-bold mb-2" th:text="${pageTitle}">Nuevo Movimiento</h2>
+        <h2 class="text-2xl font-bold mb-2">Nuevo Movimiento</h2>
         <a href="/dashboard/admin/movements" class="text-purple-600 hover:underline">&larr; Volver a la lista</a>
     </div>
+    
+    <!-- Disclaimer principal -->
+    <div class="bg-amber-50 border border-amber-200 border-l-4 border-l-amber-500 p-4 mb-6 rounded-md text-amber-700">
+        <h3 class="font-bold mb-2 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
+            </svg>
+            Información importante
+        </h3>
+        <p class="mb-2">Una vez creado el movimiento, solo se podrán actualizar los siguientes datos:</p>
+        <ul class="list-disc ml-6">
+            <li>Nombre del movimiento</li>
+            <li>Estado del movimiento</li>
+        </ul>
+        <p class="mt-2 text-amber-600">El responsable, cliente y otros datos no podrán ser modificados después de la creación.</p>
+    </div>
+    
     <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <form th:action="@{/dashboard/admin/movements/create}" method="post">
-            <input type="hidden" name="clientId" th:value="${clientId}" />
-            <input type="hidden" name="batchIds" th:value="${batchIds}" />
-            <input type="hidden" name="responsibleId" th:value="${responsibleId}" />
-            <div th:switch="${step}">
-                <!-- Paso 1: Seleccionar cliente -->
-                <div th:case="1">
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Selecciona un cliente</label>
-                    <select name="clientId" class="mt-1 block w-full border border-slate-300 rounded px-3 py-2" required>
+        <form th:action="@{/dashboard/admin/movements/create}" method="post" id="createMovementForm">
+
+            <!-- Sección Responsable -->
+            <div class="mb-6">
+                <h3 class="text-lg font-bold mb-4 border-b pb-2">1. Responsable y Detalles</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="responsibleId" class="block text-sm font-medium text-slate-700 mb-2">Responsable</label>
+                        <select id="responsibleId" name="responsibleId" class="mt-1 block w-full border border-slate-300 rounded px-3 py-2" required>
+                            <option value="">Seleccione responsable</option>
+                            <option th:each="resp : ${responsibles}" th:value="${resp.id}" th:text="${resp.name}"></option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-slate-700 mb-2">Nombre del movimiento</label>
+                        <input type="text" id="name" name="name" class="mt-1 block w-full border border-slate-300 rounded px-3 py-2" 
+                            placeholder="Ingrese un nombre descriptivo para este movimiento" required />
+                    </div>
+                    <div>
+                        <label for="type" class="block text-sm font-medium text-slate-700 mb-2">Tipo de movimiento</label>
+                        <select id="type" name="type" class="mt-1 block w-full border border-slate-300 rounded px-3 py-2" required>
+                            <option value="pedido" selected>Pedido</option>
+                            <option value="traslado">Traslado</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección Cliente -->
+            <div class="mb-6">
+                <h3 class="text-lg font-bold mb-4 border-b pb-2">2. Información del Cliente</h3>
+                <div>
+                    <label for="clientId" class="block text-sm font-medium text-slate-700 mb-2">Cliente</label>
+                    <select id="clientId" name="clientId" class="mt-1 block w-full border border-slate-300 rounded px-3 py-2" required>
                         <option value="">Seleccione un cliente</option>
                         <option th:each="client : ${clients}" th:value="${client.id}" th:text="${client.name}"></option>
                     </select>
-                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded mt-4">Siguiente</button>
                 </div>
-                <!-- Paso 2: Seleccionar lotes -->
-                <div th:case="2">
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Selecciona los lotes</label>
-                    <div class="max-h-80 overflow-y-auto border rounded p-2 mb-2">
-                        <table class="min-w-full divide-y divide-slate-200 text-sm">
-                            <thead class="bg-slate-100 text-slate-700">
-                                <tr>
-                                    <th class="px-2 py-1 text-left">Seleccionar</th>
-                                    <th class="px-2 py-1 text-left"># Serie</th>
-                                    <th class="px-2 py-1 text-left">Producto</th>
-                                    <th class="px-2 py-1 text-left">Cantidad</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr th:each="batch : ${batches}" class="hover:bg-slate-50">
-                                    <td class="px-2 py-1">
-                                        <input type="checkbox" name="batchCheckbox" th:value="${batch.id}" />
-                                    </td>
-                                    <td class="px-2 py-1" th:text="${batch.serialNumber}"></td>
-                                    <td class="px-2 py-1" th:text="${batch.product.name}"></td>
-                                    <td class="px-2 py-1" th:text="${batch.amount}"></td>
-                                </tr>
-                            </tbody>
-                        </table>
+            </div>
+
+            <!-- Sección Lotes (Collapsible) -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center border-b pb-2 mb-4">
+                    <h3 class="text-lg font-bold">3. Selección de Lotes</h3>
+                    <button type="button" id="batchSectionToggle" class="text-purple-600 hover:text-purple-800 focus:outline-none">
+                        Mostrar sección de lotes 
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="disclaimer mb-4">
+                    <span class="font-medium">💡 Nota:</span> La asignación de lotes es una tarea logística que normalmente realiza el encargado correspondiente. 
+                    Sin embargo, como gerente, puedes visualizar y asignar los lotes si es necesario.
+                </div>
+
+                <div id="batchSectionContent" class="hidden">
+                  
+                    <div id="batchesLoading" class="text-center py-4 text-slate-500">
+                        Cargando lotes disponibles...
                     </div>
-                    <input type="hidden" name="batchIds" id="batchIdsInput" th:value="${batchIds}" />
-                    <button type="button" onclick="window.history.back()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded">Anterior</button>
-                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded ml-2" onclick="return setBatchIds()">Siguiente</button>
-                </div>
-                <!-- Paso 3: Seleccionar responsable -->
-                <div th:case="3">
-                    <label class="block text-sm font-medium text-slate-700 mb-2">Selecciona responsable</label>
-                    <select name="responsibleId" class="mt-1 block w-full border border-slate-300 rounded px-3 py-2" required>
-                        <option value="">Seleccione responsable</option>
-                        <option th:each="resp : ${responsibles}" th:value="${resp.id}" th:text="${resp.name}"></option>
-                    </select>
-                    <button type="button" onclick="window.history.back()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded">Anterior</button>
-                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded ml-2">Siguiente</button>
-                </div>
-                <!-- Paso 4: Confirmar -->
-                <div th:case="4">
-                    <h4 class="font-bold mb-2">Resumen</h4>
-                    <div class="mb-4">
-                        <b>Cliente:</b> <span th:text="${client.name}"></span><br/>
-                        <b>Responsable:</b> <span th:text="${responsible.name}"></span><br/>
-                        <b>Lotes:</b>
-                        <div class="overflow-x-auto mt-2">
-                            <table class="min-w-full divide-y divide-slate-200 text-sm">
-                                <thead class="bg-slate-100 text-slate-700">
-                                    <tr>
-                                        <th class="px-4 py-2 text-left"># Serie</th>
-                                        <th class="px-4 py-2 text-left">Producto</th>
-                                        <th class="px-4 py-2 text-left">Cantidad</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr th:each="batch : ${selectedBatches}" class="hover:bg-slate-50">
-                                        <td class="px-4 py-2" th:text="${batch.serialNumber}"></td>
-                                        <td class="px-4 py-2" th:text="${batch.product.name}"></td>
-                                        <td class="px-4 py-2" th:text="${batch.amount}"></td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                    
+                    <div id="batchesContainer" class="batch-container hidden">
+                        <!-- Columna Izquierda: Lotes Disponibles -->
+                        <div>
+                            <div class="mb-2 font-medium text-slate-700">Lotes Disponibles</div>
+                            <div id="availableBatches" class="batch-list">
+                                <div class="batch-list-header grid grid-cols-3">
+                                    <div>Nº Serie</div>
+                                    <div>Producto</div>
+                                    <div>Cantidad</div>
+                                </div>
+                                <div id="availableBatchesList">
+                                    <!-- Los lotes disponibles se cargarán aquí -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Botones de Transferencia -->
+                        <div class="transfer-buttons">
+                            <button type="button" id="moveToSelected" class="w-12 h-12 rounded-full bg-purple-100 hover:bg-purple-200 text-purple-600 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                            <button type="button" id="moveToAvailable" class="w-12 h-12 rounded-full bg-purple-100 hover:bg-purple-200 text-purple-600 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <!-- Columna Derecha: Lotes Seleccionados -->
+                        <div>
+                            <div class="mb-2 font-medium text-slate-700">Lotes Seleccionados</div>
+                            <div id="selectedBatches" class="batch-list">
+                                <div class="batch-list-header grid grid-cols-3">
+                                    <div>Nº Serie</div>
+                                    <div>Producto</div>
+                                    <div>Cantidad</div>
+                                </div>
+                                <div id="selectedBatchesList">
+                                    <!-- Los lotes seleccionados se mostrarán aquí -->
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="mt-4">
-                        <label for="name" class="block text-sm font-medium text-slate-700 mb-2">Nombre del movimiento</label>
-                        <input type="text" id="name" name="name" class="mt-1 block w-full border border-slate-300 rounded px-3 py-2" 
-                               placeholder="Ingrese un nombre descriptivo para este movimiento" required />
-                    </div>
-                    <div class="mt-6">
-                        <button type="button" onclick="window.history.back()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2 px-4 rounded">Anterior</button>
-                        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded ml-2">Guardar</button>
-                    </div>
                 </div>
+                
+                <input type="hidden" name="batchIds" id="batchIdsInput" value="" />
+            </div>
+
+            <!-- Botón de envío -->
+            <div class="mt-6">
+                <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded transition w-full"
+                        onclick="return validateForm()">
+                    Guardar Movimiento
+                </button>
             </div>
         </form>
     </div>
 </div>
-<script th:inline="javascript">
-    function setBatchIds() {
-        var checked = Array.from(document.querySelectorAll('input[name="batchCheckbox"]:checked')).map(cb => cb.value);
-        document.getElementById('batchIdsInput').value = checked.join(',');
-        return checked.length > 0;
-    }
-</script>
+
 </body>
 </html> 

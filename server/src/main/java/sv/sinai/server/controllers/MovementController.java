@@ -107,7 +107,13 @@ public class MovementController {
         movement.setCreatedByUser(movementRequest.getCreatedByUser());
         movement.setCreatedAt(movementRequest.getCreatedAt());
 
-        return ResponseEntity.ok(movementService.createMovement(movement, movementRequest.getBatches()));
+        // Allow empty batches list - warehouse staff can add them later
+        List<Integer> batches = movementRequest.getBatches();
+        if (batches == null) {
+            batches = List.of();
+        }
+        
+        return ResponseEntity.ok(movementService.createMovement(movement, batches));
     }
 
     // Update movement
