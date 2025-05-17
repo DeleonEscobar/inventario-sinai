@@ -8,7 +8,7 @@ import java.util.List;
 
 public class MovementDTO {
     private Integer id;
-    private String name;
+    private String notes;
     private Integer type;
     private Integer status;
     private Client client;
@@ -18,9 +18,9 @@ public class MovementDTO {
     private Instant updatedAt;
     private List<Batch> batches;
 
-    public MovementDTO(Integer id, String name, Integer type, Integer status, Client client, UserDTO responsibleUser, UserDTO createdByUser, Instant createdAt, Instant updatedAt, List<Batch> batches) {
+    public MovementDTO(Integer id, String notes, Integer type, Integer status, Client client, UserDTO responsibleUser, UserDTO createdByUser, Instant createdAt, Instant updatedAt, List<Batch> batches) {
         this.id = id;
-        this.name = name;
+        this.notes = notes;
         this.type = type;
         this.status = status;
         this.client = client;
@@ -39,12 +39,12 @@ public class MovementDTO {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getNotes() {
+        return notes;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 
     public Integer getType() {

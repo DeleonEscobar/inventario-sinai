@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sv.sinai.server.entities.beans.DashboardTools;
-import sv.sinai.server.services.DashboardService;
 import sv.sinai.server.services.extra.DashboardToolService;
 
 import java.util.Map;
