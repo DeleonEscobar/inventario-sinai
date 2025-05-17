@@ -10,7 +10,7 @@ import sv.sinai.client.models.User;
 
 public abstract class BaseController {
     protected final RestTemplate restTemplate;
-
+    
     @Value("${api.baseURL}")
     protected String BASE_URL;
 

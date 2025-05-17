@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -13,8 +14,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jakarta.servlet.http.HttpSession;
 import org.springframework.ui.Model;
@@ -28,6 +32,7 @@ import sv.sinai.client.models.Batch;
 public class MovementsController extends BaseController {
 
     private final RestTemplate restTemplate;
+    private final Logger logger = LoggerFactory.getLogger(MovementsController.class);
 
     @Value("${api.baseURL}")
     private String BASE_URL;
@@ -49,7 +54,8 @@ public class MovementsController extends BaseController {
     public String movements(HttpSession session, Model model) {
         User user = getSessionUser(session);
         model.addAttribute("user", user);
-        model.addAttribute("pageTitle", "Gestión de Movimientos");
+        // model.addAttribute("pageTitle", "Gestión de Movimientos");
+
         String token = getTokenFromSession(session);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
@@ -255,7 +261,8 @@ public class MovementsController extends BaseController {
     public String viewMovement(
         @PathVariable("id") Long id,
         HttpSession session,
-        Model model
+        Model model,
+        RedirectAttributes redirectAttributes
     ) {
         User user = getSessionUser(session);
         model.addAttribute("user", user);
@@ -278,9 +285,18 @@ public class MovementsController extends BaseController {
             model.addAttribute("pageTitle", "Detalle de Movimiento: " + movement.getName());
             
             return "dashboard/movements/view";
+            
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
+                redirectAttributes.addFlashAttribute("error", "El movimiento solicitado no existe");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Error al cargar el movimiento.");
+            }
+            return "redirect:/dashboard/admin/movements";
+            
         } catch (Exception e) {
-            model.addAttribute("error", "Error al cargar el movimiento: " + e.getMessage());
-            return "dashboard/movements/index";
+            redirectAttributes.addFlashAttribute("error", "Ocurrió un error inesperado. Por favor intente más tarde.");
+            return "redirect:/dashboard/admin/movements";
         }
     }
     

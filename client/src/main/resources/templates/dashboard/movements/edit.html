@@ -6,29 +6,102 @@
 <body>
 <div class="w-full md:p-6 md:pt-16" layout:fragment="custom-content">
     <div class="mb-6">
-        <h2 class="text-2xl font-bold mb-2" th:text="${pageTitle}">Editar Movimiento</h2>
-        <a href="/dashboard/admin/movements" class="text-purple-600 hover:underline">&larr; Volver a la lista</a>
+        <!-- <h2 class="text-2xl font-bold mb-2" th:text="${pageTitle}">Editar Movimiento</h2> -->
+
+        <div class="mb-6 flex items-center justify-between">
+
+            <a th:href="@{'/dashboard/admin/movements/' + ${movement.id}}" class="text-purple-600 hover:underline flex items-center">   
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                Volver a la lista
+            </a>
+
+            <a th:href="@{'/dashboard/admin/movements/' + ${movement.id}}" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition flex items-center">   
+                <span class="text-xl mr-1">🔍</span>
+                Ver movimiento
+            </a>
+
+        </div>
+
+        <div class="text-sm text-slate-500 bg-slate-100 border border-slate-300 rounded-md p-4 mb-4">
+            <span class="font-medium">ℹ️ Nota:</span>
+            Solo es posible actualizar el <b>estado</b> del movimiento o su <b>nombre</b>. 
+            Si necesitas cambiar el <b>cliente</b> o el <b>responsable</b>, por razones logísticas y de auditoría,
+            debes <span class="italic">cancelar este movimiento</span> y crear uno nuevo.
+        </div>
+
     </div>
-    <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <form th:action="@{'/dashboard/admin/movements/' + ${movement.id} + '/update'}" method="post">
-            <div class="mb-4">
-                <b>Nombre:</b> <span th:text="${movement.name != null ? movement.name : movement.notes}"></span><br/>
-                <b>Cliente:</b> <span th:text="${movement.client.name}"></span><br/>
-                <b>Responsable:</b> <span th:text="${movement.responsibleUser.name}"></span><br/>
-                <b>Tipo:</b> <span th:text="${movement.type}"></span><br/>
-                <b>Creado:</b> <span th:text="${#dates.format(movement.createdAt, 'dd/MM/yyyy HH:mm')}"></span><br/>
+
+    <div class="bg-white rounded-lg shadow p-6 mb-6 space-y-6">
+        
+        <!-- Formulario de edición -->
+        <form th:action="@{'/dashboard/admin/movements/' + ${movement.id} + '/update'}" method="post" class="mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Campo editable para Nombre -->
+                <div>
+                    <label for="name" class="block text-sm font-semibold text-slate-700 mb-2">Nombre del movimiento</label>
+                    <input type="text" id="name" name="name"
+                        th:value="${movement.name}"
+                        class="block w-full border border-slate-300 rounded px-3 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                        placeholder="Ingrese el nombre del movimiento" required />
+                </div>
+
+                <div>
+                    <label for="status" class="block text-sm font-semibold text-slate-700 mb-2">Estado</label>
+                    <select id="status" name="status" 
+                            class="block w-full border border-slate-300 rounded px-3 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                            required>
+                        <option th:value="1" th:selected="${movement.status == 1}">Solicitado</option>
+                        <option th:value="2" th:selected="${movement.status == 2}">Completado</option>
+                        <option th:value="3" th:selected="${movement.status == 3}">Cancelado</option>
+                    </select>
+                </div>
             </div>
-            <div class="mb-4">
-                <label for="status" class="block text-sm font-medium text-slate-700 mb-2">Estado</label>
-                <select id="status" name="status" class="mt-1 block w-full border border-slate-300 rounded px-3 py-2" required>
-                    <option th:value="1" th:selected="${movement.status == 1}">Solicitado</option>
-                    <option th:value="2" th:selected="${movement.status == 2}">Completado</option>
-                    <option th:value="3" th:selected="${movement.status == 3}">Cancelado</option>
-                </select>
+
+            <div class="mt-6">
+                <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-6 rounded transition w-full">
+                    Actualizar
+                </button>
             </div>
-            <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded">Actualizar</button>
         </form>
+
+        <!-- Datos del movimiento -->
+        <div class="border-t pt-6 border-slate-400">
+            <h3 class="text-lg font-semibold mb-4">Otros detalles del movimiento</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <div class="w-full col-span-2">
+                    <label class="block text-slate-600 text-sm font-semibold mb-1">Tipo:</label>
+                    <div th:with="type=${movement.typeName}"
+                         th:classappend="${type == 'Entrada'} ? 'bg-green-100 text-green-800' : (${type == 'Salida'} ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800')"
+                         class="text-center inline-block w-full px-3 py-2 rounded-md text-sm font-semibold" 
+                         th:text="${movement.typeName}">-</div>
+                </div>
+                
+                <div>
+                    <label class="block text-slate-600 text-sm font-semibold mb-1">Cliente:</label>
+                    <div class="bg-slate-50 border border-slate-200 rounded px-3 py-2" 
+                         th:text="${movement.client.name}">-</div>
+                </div>
+                <div>
+                    <label class="block text-slate-600 text-sm font-semibold mb-1">Responsable:</label>
+                    <div class="bg-slate-50 border border-slate-200 rounded px-3 py-2" 
+                         th:text="${movement.responsibleUser.name}">-</div>
+                </div>
+                <div>
+                    <label class="block text-slate-600 text-sm font-semibold mb-1">Creado:</label>
+                    <div class="bg-slate-50 border border-slate-200 rounded px-3 py-2" 
+                         th:text="${#dates.format(movement.createdAt, 'dd/MM/yyyy HH:mm')}">-</div>
+                </div>
+                <div>
+                    <label class="block text-slate-600 text-sm font-semibold mb-1">Actualizado:</label>
+                    <div class="bg-slate-50 border border-slate-200 rounded px-3 py-2" 
+                         th:text="${#dates.format(movement.updatedAt, 'dd/MM/yyyy HH:mm')}">-</div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 </body>
-</html> 
+</html>
