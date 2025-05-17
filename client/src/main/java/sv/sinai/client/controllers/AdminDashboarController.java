@@ -42,7 +42,10 @@ public class AdminDashboarController extends BaseController {
     @PreAuthorize("hasAuthority('ACCESS_ADMIN')")
     public String adminDashboard(HttpSession session, Model model) {
         User user = getSessionUser(session);
+
         model.addAttribute("user", user);
+        model.addAttribute("activePage", "dashboard");  
+        
         return "dashboard/index";
     }
 

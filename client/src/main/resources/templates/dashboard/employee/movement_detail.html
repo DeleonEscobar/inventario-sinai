@@ -3,6 +3,21 @@
       layout:decorate="~{layouts/layoutDashboard.html}">
 <head>
     <title>Detalles de Movimiento | Inventario Pan Sinai</title>
+    <style>
+        .batch-item {
+            padding: 8px;
+            border-bottom: 1px solid #e2e8f0;
+            cursor: pointer;
+        }
+        .batch-item:hover {
+            background-color: #f8fafc;
+        }
+        .batch-item.selected {
+            background-color: #e9d5ff;
+        }
+    </style>
+    
+    <script type="module" src="/js/movements/movement-detail.js"></script>
 </head>
 <body>
 <div class="w-full md:p-6 md:pt-16" layout:fragment="custom-content">
@@ -92,7 +107,70 @@
     <div class="bg-white rounded-lg border border-slate-300 p-6 mt-6">
         <h3 class="text-lg font-bold mb-4">Lotes Asociados</h3>
         
-        <div class="overflow-x-auto">
+        <!-- Sección para gestionar lotes (inicia oculta) -->
+        <div id="batchSectionContent" class="mb-6 hidden">
+            <!-- Campo oculto para los IDs de lotes -->
+            <input type="hidden" id="batchIdsInput" name="batchIds">
+            <!-- Campo oculto para el ID del movimiento -->
+            <input type="hidden" id="movementId" th:value="${movement.id}">
+            
+            <div id="batchesLoading" class="text-center py-4 text-slate-500 hidden">
+                Cargando lotes disponibles...
+            </div>
+            
+            <div id="batchesContainer" class="hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <h4 class="font-medium mb-2">Lotes Disponibles</h4>
+                        <div class="border border-slate-300 rounded overflow-hidden">
+                            <div class="batch-header grid grid-cols-3 bg-slate-100 p-2 font-medium">
+                                <div>Serial</div>
+                                <div>Producto</div>
+                                <div>Cantidad</div>
+                            </div>
+                            <div id="availableBatchesList" class="batch-list max-h-60 overflow-y-auto p-2"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="font-medium mb-2">Lotes Seleccionados</h4>
+                        <div class="border border-slate-300 rounded overflow-hidden">
+                            <div class="batch-header grid grid-cols-3 bg-slate-100 p-2 font-medium">
+                                <div>Serial</div>
+                                <div>Producto</div>
+                                <div>Cantidad</div>
+                            </div>
+                            <div id="selectedBatchesList" class="batch-list max-h-60 overflow-y-auto p-2"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-center gap-4 mb-4">
+                    <button id="moveToSelected" class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded">
+                        <span>&rarr;</span> Agregar a Seleccionados
+                    </button>
+                    <button id="moveToAvailable" class="bg-slate-600 hover:bg-slate-700 text-white font-medium py-2 px-4 rounded">
+                        <span>&larr;</span> Quitar de Seleccionados
+                    </button>
+                </div>
+                
+                <div class="flex justify-center">
+                    <button id="updateBatchesBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded">
+                        Guardar Cambios de Lotes
+                    </button>
+                </div>
+                
+                <div class="mt-4 text-sm text-slate-500 bg-slate-50 p-3 rounded">
+                    <p><span class="font-medium">Consejos:</span></p>
+                    <ul class="list-disc pl-5 mt-1">
+                        <li>Haga clic en un lote para seleccionarlo.</li>
+                        <li>Doble clic para mover un lote directamente a la otra lista.</li>
+                        <li>Los cambios no se aplicarán hasta que haga clic en "Guardar Cambios de Lotes".</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+       <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-slate-200">
                 <thead class="bg-slate-100">
                 <tr>
@@ -103,7 +181,7 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Vence</th>
                 </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-200">
+                 <!--<tbody class="divide-y divide-slate-200">
                 <tr th:if="${#lists.isEmpty(movement.batches)}">
                     <td colspan="5" class="px-6 py-4 text-center text-slate-500">No hay lotes asociados a este movimiento</td>
                 </tr>
@@ -115,6 +193,7 @@
                     <td class="px-6 py-4" th:text="${#dates.format(batch.expirationDate, 'dd/MM/yyyy')}"></td>
                 </tr>
                 </tbody>
+                        -->
             </table>
         </div>
     </div>

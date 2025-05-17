@@ -54,27 +54,130 @@ public class MovementsController extends BaseController {
         model.addAttribute("route", "admin");
     }
 
-    // Lista de movimientos
-    @GetMapping("/admin/movements")
-    @PreAuthorize("hasAuthority('ACCESS_ADMIN')")
+    @GetMapping({"/admin/movements", "/employee/movements"})
+    @PreAuthorize("hasAnyAuthority('ACCESS_ADMIN', 'ACCESS_EMPLOYEE_DASHBOARD')")
     public String movements(HttpSession session, Model model) {
         User user = getSessionUser(session);
+        boolean isAdmin = user.getRoleId() == 1;
+        
         model.addAttribute("user", user);
-        model.addAttribute("pageTitle", "Gestión de Movimientos");
+        model.addAttribute("pageTitle", isAdmin ? "Gestión de Movimientos" : "Movimientos Asignados");
         model.addAttribute("activePage", "movements");
+        
+        if (!isAdmin) {
+            model.addAttribute("route", "employee");
+        }
 
         String token = getTokenFromSession(session);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
         HttpEntity<String> entity = new HttpEntity<>(headers);
+        
+        String url = isAdmin ? 
+            BASE_URL + "/movements" :
+            BASE_URL + "/movements/responsible/" + user.getId();
+            
         ResponseEntity<Movement[]> response = restTemplate.exchange(
-                BASE_URL + "/movements",
-                HttpMethod.GET,
+                url,
+                HttpMethod.GET, 
                 entity,
                 Movement[].class);
 
         model.addAttribute("movements", response.getBody());
         return "dashboard/movements/index";
+    }
+    
+    // ======================================== MOVIMIENTOS EMPLEADOS ========================================
+    @GetMapping("/employee/movements/{id}")
+    @PreAuthorize("hasAuthority('ACCESS_EMPLOYEE_DASHBOARD')")
+    public String viewEmployeeMovement(
+            @PathVariable("id") Long id,
+            HttpSession session,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+        
+        User user = getSessionUser(session);
+        model.addAttribute("user", user);
+        model.addAttribute("pageTitle", "Detalles de Movimiento");
+        model.addAttribute("activePage", "movements");
+        model.addAttribute("route", "employee");
+        
+        String token = getTokenFromSession(session);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+        
+        try {
+            ResponseEntity<Movement> response = restTemplate.exchange(
+                    BASE_URL + "/movements/" + id,
+                    HttpMethod.GET,
+                    entity,
+                    Movement.class);
+            
+            Movement movement = response.getBody();
+            
+            // Verificar que el movimiento esté asignado al usuario actual
+            if (movement.getResponsibleUser().getId().equals(user.getId())) {
+                model.addAttribute("movement", movement);
+                return "dashboard/employee/movement_detail";
+            } else {
+                redirectAttributes.addFlashAttribute("error", "No tienes permiso para ver este movimiento");
+                return "redirect:/dashboard/employee/movements";
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al cargar el movimiento: " + e.getMessage());
+            return "redirect:/dashboard/employee/movements";
+        }
+    }
+    
+    @PostMapping("/employee/movements/{id}/update-status")
+    @PreAuthorize("hasAuthority('ACCESS_EMPLOYEE_DASHBOARD')")
+    public String updateEmployeeMovementStatus(
+            @PathVariable("id") Long id,
+            @RequestParam("status") Integer status,
+            @RequestParam("notes") String notes,
+            HttpSession session,
+            RedirectAttributes redirectAttributes) {
+        
+        User user = getSessionUser(session);
+        String token = getTokenFromSession(session);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        headers.set("Content-Type", "application/json");
+        
+        try {
+            // Primero verificar que el movimiento está asignado al usuario
+            HttpEntity<String> getEntity = new HttpEntity<>(headers);
+            ResponseEntity<Movement> getResponse = restTemplate.exchange(
+                    BASE_URL + "/movements/" + id,
+                    HttpMethod.GET,
+                    getEntity,
+                    Movement.class);
+            
+            Movement movement = getResponse.getBody();
+            
+            if (!movement.getResponsibleUser().getId().equals(user.getId())) {
+                redirectAttributes.addFlashAttribute("error", "No tienes permiso para actualizar este movimiento");
+                return "redirect:/dashboard/employee/movements";
+            }
+            
+            // Actualizar el estado del movimiento
+            movement.setStatus(status);
+            movement.setNotes(notes);
+            
+            HttpEntity<Movement> updateEntity = new HttpEntity<>(movement, headers);
+            restTemplate.exchange(
+                    BASE_URL + "/movements/" + id,
+                    HttpMethod.PUT,
+                    updateEntity,
+                    Movement.class);
+            
+            redirectAttributes.addFlashAttribute("success", "Información del movimiento actualizada correctamente");
+            return "redirect:/dashboard/employee/movements/" + id;
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al actualizar el movimiento: " + e.getMessage());
+            return "redirect:/dashboard/employee/movements/" + id;
+        }
     }
 
     // Crear nuevo movimiento (vista única)

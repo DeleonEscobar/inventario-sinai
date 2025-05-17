@@ -6,7 +6,7 @@
     </button>
     -->
 
-    <!-- Sidebar hamburguesa para pantallas pequeñas -->
+    <!-- Sidebar hamburguesa para pantallas pequeñas 
     <div id="hamburger-menu" class="hamburger-menu w-full bg-[#244444] text-white z-50 hidden">
         <nav class="space-y-2 pl-4 pr-4 overflow-auto">
             <a href="#" class="flex items-center py-2 px-4 bg-[#1e3a3a] rounded">
@@ -27,6 +27,7 @@
             </a>
         </nav>
     </div>
+    -->
 
     <!-- Sidebar normal para pantallas grandes -->
     <div class="sidebar w-full lg:w-60 min-h-screen bg-[#FF5733] lg:rounded-r-2xl hidden lg:flex flex-col justify-between">
@@ -38,8 +39,56 @@
                     <h2 class="font-bold text-xl uppercase text-slate-200 leading-none">Inventario</h2>
                 </a>
             </div>
-
         </div>
+
+        <nav class="flex-1 p-4">
+            <!-- Admin Menu -->
+            <div th:if="${user.role.id == 1}" class="space-y-2">
+                <a th:href="@{/dashboard/admin/index}" 
+                   th:class="${activePage == 'dashboard'} ? 'flex items-center px-4 py-2.5 text-white bg-white/30 rounded-lg transition-all' : 'flex items-center px-4 py-2.5 text-white hover:bg-white/20 rounded-lg transition-all'">
+                    Dashboard
+                </a>
+
+                <a th:href="@{/dashboard/admin/movements}"
+                   th:class="${activePage == 'movements'} ? 'flex items-center px-4 py-2.5 text-white bg-white/30 rounded-lg transition-all' : 'flex items-center px-4 py-2.5 text-white hover:bg-white/20 rounded-lg transition-all'">
+                    Movimientos
+                </a>
+
+                <a th:href="@{/dashboard/admin/batches}"
+                   th:class="${activePage == 'batches'} ? 'flex items-center px-4 py-2.5 text-white bg-white/30 rounded-lg transition-all' : 'flex items-center px-4 py-2.5 text-white hover:bg-white/20 rounded-lg transition-all'">
+                    Lotes
+                </a>
+
+                <a th:href="@{/dashboard/admin/clients}"
+                   th:class="${activePage == 'clients'} ? 'flex items-center px-4 py-2.5 text-white bg-white/30 rounded-lg transition-all' : 'flex items-center px-4 py-2.5 text-white hover:bg-white/20 rounded-lg transition-all'">
+                    Clientes
+                </a>
+
+                <a th:href="@{/dashboard/admin/users}"
+                   th:class="${activePage == 'users'} ? 'flex items-center px-4 py-2.5 text-white bg-white/30 rounded-lg transition-all' : 'flex items-center px-4 py-2.5 text-white hover:bg-white/20 rounded-lg transition-all'">
+                    Empleados
+                </a>
+            </div>
+
+            <!-- Employee Menu -->
+            <div th:if="${user.role.id == 2}" class="space-y-2">
+                <a th:href="@{/dashboard/employee/index}"
+                   th:class="${activePage == 'dashboard'} ? 'flex items-center px-4 py-2.5 text-white bg-white/30 rounded-lg transition-all' : 'flex items-center px-4 py-2.5 text-white hover:bg-white/20 rounded-lg transition-all'">
+                    Dashboard
+                </a>
+
+                <a th:href="@{/dashboard/employee/movements}"
+                   th:class="${activePage == 'movements'} ? 'flex items-center px-4 py-2.5 text-white bg-white/30 rounded-lg transition-all' : 'flex items-center px-4 py-2.5 text-white hover:bg-white/20 rounded-lg transition-all'">
+                    Movimientos
+                </a>
+
+                <a th:href="@{/dashboard/employee/batches}"
+                   th:class="${activePage == 'batches'} ? 'flex items-center px-4 py-2.5 text-white bg-white/30 rounded-lg transition-all' : 'flex items-center px-4 py-2.5 text-white hover:bg-white/20 rounded-lg transition-all'">
+                    Lotes
+                </a>
+            </div>
+        </nav>
+
         <div class="p-4 mb-4">
             <a href="/logout" class="bg-red-900 px-4 py-2 border flex gap-2 justify-center items-center text-sm border-red-800 text-white/70 font-bold text-center rounded-md hover:bg-white/30 hover:text-white hover:border-red-700 hover:text-white transition-all duration-500">
                 <p>Cerrar sesión</p>

@@ -1,7 +1,8 @@
+import { getTokenRequest } from '/js/utils/getTokenRequest.js';
+
+const apiEndpoint = 'http://localhost:8081/api';
+
 $(document).ready(function() {
-    // Ensure jQuery is properly loaded and log it
-    console.log("jQuery version:", $.fn.jquery);
-    
     const $clientSelect = $('#clientId');
     const $typeSelect = $('#type');
     const $clientSection = $clientSelect.closest('.mb-6');
@@ -22,7 +23,6 @@ $(document).ready(function() {
     // Toggle para la sección de lotes - hacemos esto más explícito
     $batchSectionToggle.click(function(e) {
         e.preventDefault();
-        console.log("Toggle clicked");
         
         if ($batchSectionContent.hasClass('hidden')) {
             $batchSectionContent.removeClass('hidden');
@@ -65,38 +65,45 @@ $(document).ready(function() {
     // Cargar todos los lotes disponibles al iniciar
     loadAvailableBatches();
     
-    function loadAvailableBatches() {
+    async function loadAvailableBatches() {
         $batchesLoading.text('Cargando lotes disponibles...');
         $batchesLoading.removeClass('hidden');
         $batchesContainer.addClass('hidden');
         
-        // Obtener los lotes disponibles (no relacionados con otros movimientos)
-        $.ajax({
-            url: '/dashboard/admin/movements/api/batches',
-            method: 'GET',
-            dataType: 'json',
-            success: function(batches) {
-                allBatches = batches;
-                selectedBatchIds.clear();
-                
-                if (batches.length === 0) {
-                    $batchesLoading.text('No hay lotes disponibles en el sistema');
-                    $batchesLoading.removeClass('hidden');
-                    $batchesContainer.addClass('hidden');
-                    return;
-                }
-                
-                updateBatchLists();
-                $batchesLoading.addClass('hidden');
-                $batchesContainer.removeClass('hidden');
-            },
-            error: function(error) {
-                console.error('Error al cargar los lotes:', error);
-                $batchesLoading.text('Error al cargar los lotes. Intente nuevamente.');
+        try {
+            const userToken = await getTokenRequest();
+            if (!userToken) {
+                $batchesLoading.text('Error de autenticación');
+                return;
+            }
+            
+            // Obtener los lotes disponibles (no relacionados con otros movimientos)
+            const batches = await $.ajax({
+                url: `${apiEndpoint}/batches`,
+                method: 'GET',
+                dataType: 'json',
+                headers: { 'Authorization': `Bearer ${userToken}` }
+            });
+            
+            allBatches = batches;
+            selectedBatchIds.clear();
+            
+            if (batches.length === 0) {
+                $batchesLoading.text('No hay lotes disponibles en el sistema');
                 $batchesLoading.removeClass('hidden');
                 $batchesContainer.addClass('hidden');
+                return;
             }
-        });
+            
+            updateBatchLists();
+            $batchesLoading.addClass('hidden');
+            $batchesContainer.removeClass('hidden');
+        } catch (error) {
+            console.error('Error al cargar los lotes:', error);
+            $batchesLoading.text('Error al cargar los lotes. Intente nuevamente.');
+            $batchesLoading.removeClass('hidden');
+            $batchesContainer.addClass('hidden');
+        }
     }
     
     // Actualizar las listas de lotes
