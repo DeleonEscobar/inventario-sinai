@@ -219,6 +219,7 @@ public class MovementsController extends BaseController {
         @RequestParam("clientId") Long clientId,
         @RequestParam("batchIds") String batchIds,
         @RequestParam("responsibleId") Long responsibleId,
+        @RequestParam("name") String name,
         HttpSession session,
         RedirectAttributes redirectAttributes
     ) {
@@ -230,7 +231,7 @@ public class MovementsController extends BaseController {
             
             // Crear el objeto de movimiento
             Movement movement = new Movement();
-            movement.setName("Movimiento de inventario");
+            movement.setName(name);
             movement.setType(1);
             movement.setStatus(1);
             
@@ -340,6 +341,7 @@ public class MovementsController extends BaseController {
     @PreAuthorize("hasAuthority('ACCESS_ADMIN')")
     public String updateMovement(
         @PathVariable("id") Long id,
+        @RequestParam("name") String name,
         @RequestParam("status") Integer status,
         HttpSession session,
         RedirectAttributes redirectAttributes
@@ -359,6 +361,7 @@ public class MovementsController extends BaseController {
             );
             
             Movement movement = getResponse.getBody();
+            movement.setName(name);
             movement.setStatus(status);
             
             HttpEntity<Movement> requestEntity = new HttpEntity<>(movement, headers);

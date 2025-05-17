@@ -10,7 +10,7 @@
 
         <div class="mb-6 flex items-center justify-between">
 
-            <a th:href="@{'/dashboard/admin/movements/' + ${movement.id}}" class="text-purple-600 hover:underline flex items-center">   
+            <a href="/dashboard/admin/movements" class="text-purple-600 hover:underline flex items-center">   
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
@@ -52,9 +52,9 @@
                     <select id="status" name="status" 
                             class="block w-full border border-slate-300 rounded px-3 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-purple-400"
                             required>
-                        <option th:value="1" th:selected="${movement.status == 1}">Solicitado</option>
-                        <option th:value="2" th:selected="${movement.status == 2}">Completado</option>
-                        <option th:value="3" th:selected="${movement.status == 3}">Cancelado</option>
+                        <option th:value="1" th:selected="${movement.status == 1}">Pendiente</option>
+                        <option th:value="2" th:selected="${movement.status == 2}">En curso</option>
+                        <option th:value="3" th:selected="${movement.status == 3}">Completado</option>
                     </select>
                 </div>
             </div>
@@ -71,12 +71,15 @@
             <h3 class="text-lg font-semibold mb-4">Otros detalles del movimiento</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
-                <div class="w-full col-span-2">
+                <div>
                     <label class="block text-slate-600 text-sm font-semibold mb-1">Tipo:</label>
-                    <div th:with="type=${movement.typeName}"
-                         th:classappend="${type == 'Entrada'} ? 'bg-green-100 text-green-800' : (${type == 'Salida'} ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800')"
-                         class="text-center inline-block w-full px-3 py-2 rounded-md text-sm font-semibold" 
-                         th:text="${movement.typeName}">-</div>
+                    <div th:class="'w-full text-center px-3 py-1 rounded-full text-sm font-semibold ' + ${movement.typeColorString}" th:text="${movement.typeName}">-</div>
+                </div>
+
+                <div>
+                    <label class="block text-slate-600 text-sm font-semibold mb-1">Estado actual:</label>
+                    <div th:class="'w-full text-center px-3 py-1 rounded-full text-sm font-semibold ' + ${movement.statusColorString}"
+                         th:text="${movement.statusName}">-</div>
                 </div>
                 
                 <div>

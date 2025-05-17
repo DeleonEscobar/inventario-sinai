@@ -41,17 +41,11 @@
                 </div>
                 <div>
                     <b>Estado:</b>
-                    
-                    <div th:with="status=${movement.statusName}"
-                         th:classappend="${status == 'Pendiente'} ? 'bg-yellow-100 text-yellow-800' : (${status == 'En curso'} ? 'bg-blue-100 text-blue-800' : (${status == 'Completado'} ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'))"
-                         class="inline-block px-3 py-1 rounded-full text-sm font-semibold">
-                        <span th:text="${movement.statusName}"></span>
-                    </div>
-                </div>
+                    <div th:class="'inline-block px-3 py-1 rounded-full text-sm font-semibold ' + ${movement.statusColorString}" th:text="${movement.statusName}"></div>
                 </div>
                 <div>
                     <b>Tipo:</b>
-                    <div class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold" th:text="${movement.type}"></div>
+                    <div th:class="'inline-block px-3 py-1 rounded-full text-sm font-semibold ' + ${movement.typeColorString}" th:text="${movement.typeName}"></div>
                 </div>
             </div>
     
