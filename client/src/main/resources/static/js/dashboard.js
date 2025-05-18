@@ -66,6 +66,55 @@ async function loadDashboardData() {
                 .appendTo($batchesList);
         });
         
+        // Actualizar lista de empleados
+        const $employeesList = $('#active-employees').empty();
+        
+        if (dashboardTools.allEmployees && dashboardTools.allEmployees.length > 0) {
+            $.each(dashboardTools.allEmployees, function(i, employee) {
+                // Determinar el tipo de rol
+                let roleName = '';
+                let roleClass = '';
+                
+                switch(employee.role) {
+                    case 1:
+                        roleName = 'Administrador';
+                        roleClass = 'bg-blue-100 text-blue-800';
+                        break;
+                    case 2:
+                        roleName = 'Operador';
+                        roleClass = 'bg-green-100 text-green-800';
+                        break;
+                    default:
+                        roleName = 'Usuario';
+                        roleClass = 'bg-gray-100 text-gray-800';
+                }
+                
+                // Verificar si es el usuario actual
+                const isCurrentUser = parseInt(currentUserId) === employee.id;
+                const userClass = isCurrentUser ? 'border-blue-300 bg-blue-50' : '';
+                
+                $('<div>')
+                    .addClass(`p-4 rounded-lg border ${userClass} mb-2`)
+                    .html(`
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <h4 class="font-semibold">${employee.name}</h4>
+                                <p class="text-sm text-gray-600">Usuario: ${employee.username}</p>
+                                <p class="text-sm text-gray-600">DUI: ${employee.dui || 'No disponible'}</p>
+                            </div>
+                            <div>
+                                <span class="px-2 py-1 rounded text-xs font-medium ${roleClass}">
+                                    ${roleName}
+                                </span>
+                            </div>
+                        </div>
+                    `)
+                    .appendTo($employeesList);
+            });
+        } else {
+            $employeesList.html('<p class="text-center text-gray-500 py-4">No hay empleados registrados</p>');
+        }
+        
     } catch (error) {
         console.error('Error al cargar los datos del dashboard:', error);
     }

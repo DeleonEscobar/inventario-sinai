@@ -3,6 +3,30 @@ import { formatDate } from '/js/utils/formatDate.js';
 
 const apiEndpoint = 'http://localhost:8081/api/users';
 let editing = false;
+let currentUser = null;
+
+// Obtener el usuario actual de la sesión
+async function getCurrentUser() {
+    try {
+        // Obtener el usuario de la sesión desde un atributo data del body o cualquier elemento donde esté almacenado
+        const userJson = $('body').data('user');
+        if (userJson) {
+            currentUser = typeof userJson === 'string' ? JSON.parse(userJson) : userJson;
+        }
+        
+        // Si no está disponible, intentar obtenerlo de otra manera (ajustar según tu implementación)
+        if (!currentUser || !currentUser.id) {
+            const userToken = await getTokenRequest();
+            if (userToken) {
+                // Obtener información del usuario actual desde otra fuente si está disponible
+                // Por ejemplo, desde un endpoint específico
+                // Esta parte puede variar según cómo esté implementada tu aplicación
+            }
+        }
+    } catch (err) {
+        console.error('Error al obtener el usuario actual:', err);
+    }
+}
 
 function openModal(edit = false, user = null) {
     $('#user-modal').removeClass('hidden');
@@ -42,6 +66,7 @@ async function fetchUsers() {
             url: apiEndpoint,
             headers: { 'Authorization': `Bearer ${userToken}` }
         });
+        await getCurrentUser();
         renderUsers(users);
     } catch (err) {
         $('#users-table-body').html('<tr><td colspan="6" class="text-center py-6 text-red-500">Error al cargar usuarios</td></tr>');
@@ -63,16 +88,27 @@ function renderUsers(users) {
             default: roleName = 'Desconocido';
         }
         
+        // Verificar si es el usuario actual
+        const isCurrentUser = currentUser && currentUser.id === user.id;
+        
+        // Crear la fila con clase de resaltado si es el usuario actual
+        const rowClass = isCurrentUser ? 'bg-slate-100' : '';
+        
+        // Preparar los botones según si es el usuario actual o no
+        const actionButtons = isCurrentUser 
+            ? `<button class="edit-btn text-blue-600 hover:underline mr-2" data-id="${user.id}">Editar</button>`
+            : `<button class="edit-btn text-blue-600 hover:underline mr-2" data-id="${user.id}">Editar</button>
+               <button class="delete-btn text-red-600 hover:underline" data-id="${user.id}">Eliminar</button>`;
+        
         $tbody.append(`
-            <tr>
+            <tr class="${rowClass}">
                 <td class="px-6 py-4">${user.name}</td>
                 <td class="px-6 py-4">${user.username}</td>
                 <td class="px-6 py-4">${user.dui}</td>
                 <td class="px-6 py-4">${roleName}</td>
                 <td class="px-6 py-4">${formatDate(user.createdAt)}</td>
                 <td class="px-6 py-4 text-center">
-                    <button class="edit-btn text-orange-300 hover:underline mr-2" data-id="${user.id}">Editar</button>
-                    <button class="delete-btn text-red-600 hover:underline" data-id="${user.id}">Eliminar</button>
+                    ${actionButtons}
                 </td>
             </tr>
         `);
@@ -163,4 +199,13 @@ $('#user-form').on('submit', async function(e) {
     }
 });
 
-$(document).ready(fetchUsers); 
+// Al cargar la página, intentamos obtener el usuario actual de thymeleaf
+$(document).ready(function() {
+    // Obtener el ID del usuario de la sesión desde el modelo de Thymeleaf
+    const sessionUserId = $('#session-user-id').val();
+    if (sessionUserId) {
+        currentUser = { id: parseInt(sessionUserId) };
+    }
+    
+    fetchUsers();
+}); 
