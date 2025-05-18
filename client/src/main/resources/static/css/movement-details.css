@@ -1,0 +1,22 @@
+.batch-item {
+    padding: 8px;
+    border-bottom: 1px solid #e2e8f0;
+    cursor: pointer;
+}
+
+.batch-item:hover {
+    background-color: #f8fafc;
+}
+
+.batch-item.selected {
+    background-color: #e9d5ff;
+}
+
+.batch-item.read-only {
+    cursor: default;
+    background-color: #f9fafb;
+}
+
+.batch-item.read-only:hover {
+    background-color: #f9fafb;
+}

@@ -232,6 +232,26 @@ public class MovementsController extends BaseController {
         return response.getBody();
     }
 
+    // API para obtener lotes disponibles (para AJAX)
+    @GetMapping("/employee/movements/api/batches")
+    @PreAuthorize("hasAuthority('ACCESS_EMPLOYEE_DASHBOARD')")
+    @ResponseBody
+    public Batch[] getAvailableBatchesForEmployees(HttpSession session) {
+        String token = getTokenFromSession(session);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        // Get all available batches not associated with any movement
+        ResponseEntity<Batch[]> response = restTemplate.exchange(
+                BASE_URL + "/batches/available",
+                HttpMethod.GET,
+                entity,
+                Batch[].class);
+
+        return response.getBody();
+    }
+
     // Procesar la creación del movimiento
     @PostMapping("/admin/movements/create")
     @PreAuthorize("hasAuthority('ACCESS_ADMIN')")
@@ -455,6 +475,69 @@ public class MovementsController extends BaseController {
             redirectAttributes.addFlashAttribute("error", "Error al eliminar el movimiento: " + e.getMessage());
             return "redirect:/dashboard/admin/movements";
         }
+    }
+
+    // Actualizar lotes de un movimiento (API para AJAX)
+    @PostMapping("/employee/movements/{id}/update-batches")
+    @PreAuthorize("hasAuthority('ACCESS_EMPLOYEE_DASHBOARD')")
+    @ResponseBody
+    public Map<String, Object> updateMovementBatches(
+            @PathVariable("id") Long id,
+            @RequestParam("batchIds") String batchIds,
+            HttpSession session) {
+        
+        Map<String, Object> response = new HashMap<>();
+        
+        try {
+            User user = getSessionUser(session);
+            String token = getTokenFromSession(session);
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("Authorization", "Bearer " + token);
+            headers.set("Content-Type", "application/json");
+            
+            // Primero verificar que el movimiento está asignado al usuario
+            HttpEntity<String> getEntity = new HttpEntity<>(headers);
+            ResponseEntity<Movement> getResponse = restTemplate.exchange(
+                    BASE_URL + "/movements/" + id,
+                    HttpMethod.GET,
+                    getEntity,
+                    Movement.class);
+            
+            Movement movement = getResponse.getBody();
+            
+            if (!movement.getResponsibleUser().getId().equals(user.getId())) {
+                response.put("success", false);
+                response.put("message", "No tienes permiso para actualizar este movimiento");
+                return response;
+            }
+            
+            // Convertir string de IDs de lotes a lista de enteros
+            List<Integer> batchesList = new ArrayList<>();
+            if (batchIds != null && !batchIds.isEmpty()) {
+                String[] batchIdArray = batchIds.split(",");
+                for (String batchId : batchIdArray) {
+                    batchesList.add(Integer.parseInt(batchId));
+                }
+            }
+            
+            // Enviar la actualización de lotes al API
+            HttpEntity<List<Integer>> updateEntity = new HttpEntity<>(batchesList, headers);
+            restTemplate.exchange(
+                    BASE_URL + "/movements/" + id + "/batches",
+                    HttpMethod.PUT,
+                    updateEntity,
+                    Void.class);
+            
+            response.put("success", true);
+            response.put("message", "Lotes actualizados correctamente");
+            
+        } catch (Exception e) {
+            logger.error("Error al actualizar los lotes del movimiento", e);
+            response.put("success", false);
+            response.put("message", "Error al actualizar los lotes: " + e.getMessage());
+        }
+        
+        return response;
     }
 
     // Método auxiliar para obtener el token desde la sesión

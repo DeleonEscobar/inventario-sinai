@@ -1,202 +1,200 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layoutDashboard.html}">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/layoutDashboard.html}">
+
 <head>
     <title>Detalles de Movimiento | Inventario Pan Sinai</title>
-    <style>
-        .batch-item {
-            padding: 8px;
-            border-bottom: 1px solid #e2e8f0;
-            cursor: pointer;
-        }
-        .batch-item:hover {
-            background-color: #f8fafc;
-        }
-        .batch-item.selected {
-            background-color: #e9d5ff;
-        }
-    </style>
-    
+    <link rel="stylesheet" th:href="@{/css/movement-detail.css}">
     <script type="module" src="/js/movements/movement-detail.js"></script>
 </head>
+
 <body>
-<div class="w-full md:p-6 md:pt-16" layout:fragment="custom-content">
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <!-- <h2 class="text-2xl font-bold">Detalles de Movimiento</h2> -->
-            <div></div>
-            <p class="text-slate-600">ID: <span th:text="${movement.id}"></span></p>
+    <div class="w-full md:p-6 md:pt-16" layout:fragment="custom-content">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <!-- <h2 class="text-2xl font-bold">Detalles de Movimiento</h2> -->
+                <div></div>
+                <p class="text-slate-600">ID: <span th:text="${movement.id}"></span></p>
+            </div>
+            <div>
+                <a href="/dashboard/employee/movements"
+                    class="bg-slate-500 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded transition">Volver</a>
+            </div>
         </div>
-        <div>
-            <a href="/dashboard/employee/movements" class="bg-slate-500 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded transition">Volver</a>
-        </div>
-    </div>
-    
-    <div th:if="${success}" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
-        <span class="block sm:inline" th:text="${success}"></span>
-    </div>
 
-    <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-        <span class="block sm:inline" th:text="${error}"></span>
-    </div>
+        <div th:if="${success}"
+            class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+            <span class="block sm:inline" th:text="${success}"></span>
+        </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <!-- Información del Movimiento -->
-        <div class="bg-white rounded-lg border border-slate-300 p-6">
-            <h3 class="text-lg font-bold mb-4">Información del Movimiento</h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <p class="text-sm text-slate-500">Tipo</p>
-                    <div th:class="'inline-block px-3 py-1 rounded-full text-sm font-semibold ' + ${movement.typeColorString}" th:text="${movement.typeName}"></div>
-                </div>
-                <div>
-                    <p class="text-sm text-slate-500">Estado</p>
-                    <div th:class="'inline-block px-3 py-1 rounded-full text-sm font-semibold ' + ${movement.statusColorString}" th:text="${movement.statusName}"></div>
-                </div>
-                <div>
-                    <p class="text-sm text-slate-500">Fecha de Creación</p>
-                    <p class="font-medium" th:text="${#dates.format(movement.createdAt, 'dd/MM/yyyy HH:mm')}"></p>
-                </div>
-                <div th:if="${movement.client != null}">
-                    <p class="text-sm text-slate-500">Cliente</p>
-                    <p class="font-medium" th:text="${movement.client.name}"></p>
-                </div>
-                <div>
-                    <p class="text-sm text-slate-500">Creado por</p>
-                    <p class="font-medium" th:text="${movement.createdByUser.name}"></p>
-                </div>
-            </div>
-            
-            <div class="mt-4">
-                <p class="text-sm text-slate-500">Notas</p>
-                <p class="font-medium whitespace-pre-line" th:text="${movement.notes != null ? movement.notes : 'Sin notas'}"></p>
-            </div>
+        <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+            role="alert">
+            <span class="block sm:inline" th:text="${error}"></span>
         </div>
-        
-        <!-- Actualizar Estado -->
-        <div class="bg-white rounded-lg border border-slate-300 p-6">
-            <h3 class="text-lg font-bold mb-4">Actualizar Estado</h3>
-            
-            <form th:action="@{'/dashboard/employee/movements/' + ${movement.id} + '/update-status'}" method="post">
-                <div class="space-y-4">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- Información del Movimiento -->
+            <div class="bg-white rounded-lg border border-slate-300 p-6">
+                <h3 class="text-lg font-bold mb-4">Información del Movimiento</h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label for="status" class="block text-sm font-medium text-slate-700">Estado</label>
-                        <select id="status" name="status" class="mt-1 block w-full border border-slate-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                            <option value="1" th:selected="${movement.status == 1}">Pendiente</option>
-                            <option value="2" th:selected="${movement.status == 2}">En Proceso</option>
-                            <option value="3" th:selected="${movement.status == 3}">Completado</option>
-                            <option value="4" th:selected="${movement.status == 4}">Cancelado</option>
-                        </select>
+                        <p class="text-sm text-slate-500">Tipo</p>
+                        <div th:class="'inline-block px-3 py-1 rounded-full text-sm font-semibold ' + ${movement.typeColorString}"
+                            th:text="${movement.typeName}"></div>
                     </div>
-                    
                     <div>
-                        <label for="notes" class="block text-sm font-medium text-slate-700">Notas</label>
-                        <textarea id="notes" name="notes" rows="4" class="mt-1 block w-full border border-slate-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-purple-500" th:text="${movement.notes}"></textarea>
+                        <p class="text-sm text-slate-500">Estado</p>
+                        <div th:class="'inline-block px-3 py-1 rounded-full text-sm font-semibold ' + ${movement.statusColorString}"
+                            th:text="${movement.statusName}"></div>
                     </div>
-                    
-                    <div class="w-full">
-                        <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2  w-full px-4 rounded transition">Actualizar Estado</button>
+                    <div>
+                        <p class="text-sm text-slate-500">Fecha de Creación</p>
+                        <p class="font-medium" th:text="${#dates.format(movement.createdAt, 'dd/MM/yyyy HH:mm')}"></p>
+                    </div>
+                    <div th:if="${movement.client != null}">
+                        <p class="text-sm text-slate-500">Cliente</p>
+                        <p class="font-medium" th:text="${movement.client.name}"></p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-slate-500">Creado por</p>
+                        <p class="font-medium" th:text="${movement.createdByUser.name}"></p>
                     </div>
                 </div>
-            </form>
-        </div>
-    </div>
-    
-    <!-- Lotes Asociados -->
-    <div class="bg-white rounded-lg border border-slate-300 p-6 mt-6">
-        <h3 class="text-lg font-bold mb-4">Lotes Asociados</h3>
-        
-        <!-- Sección para gestionar lotes (inicia oculta) -->
-        <div id="batchSectionContent" class="mb-6 hidden">
-            <!-- Campo oculto para los IDs de lotes -->
-            <input type="hidden" id="batchIdsInput" name="batchIds">
-            <!-- Campo oculto para el ID del movimiento -->
-            <input type="hidden" id="movementId" th:value="${movement.id}">
-            
-            <div id="batchesLoading" class="text-center py-4 text-slate-500 hidden">
-                Cargando lotes disponibles...
+
+                <div class="mt-4">
+                    <p class="text-sm text-slate-500">Notas</p>
+                    <p class="font-medium whitespace-pre-line"
+                        th:text="${movement.notes != null ? movement.notes : 'Sin notas'}"></p>
+                </div>
             </div>
-            
-            <div id="batchesContainer" class="hidden">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <h4 class="font-medium mb-2">Lotes Disponibles</h4>
-                        <div class="border border-slate-300 rounded overflow-hidden">
-                            <div class="batch-header grid grid-cols-3 bg-slate-100 p-2 font-medium">
-                                <div>Serial</div>
-                                <div>Producto</div>
-                                <div>Cantidad</div>
-                            </div>
-                            <div id="availableBatchesList" class="batch-list max-h-60 overflow-y-auto p-2"></div>
+
+            <!-- Actualizar Estado -->
+            <div class="bg-white rounded-lg border border-slate-300 p-6">
+                <h3 class="text-lg font-bold mb-4">Actualizar Estado</h3>
+
+                <form th:action="@{'/dashboard/employee/movements/' + ${movement.id} + '/update-status'}" method="post">
+                    <div class="space-y-4">
+                        <div>
+                            <label for="status" class="block text-sm font-medium text-slate-700">Estado</label>
+                            <select id="status" name="status"
+                                class="mt-1 block w-full border border-slate-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="1" th:selected="${movement.status == 1}">Pendiente</option>
+                                <option value="2" th:selected="${movement.status == 2}">En Proceso</option>
+                                <option value="3" th:selected="${movement.status == 3}">Completado</option>
+                                <option value="4" th:selected="${movement.status == 4}">Cancelado</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="notes" class="block text-sm font-medium text-slate-700">Notas</label>
+                            <textarea id="notes" name="notes" rows="4"
+                                class="mt-1 block w-full border border-slate-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                th:text="${movement.notes}"></textarea>
+                        </div>
+
+                        <div class="w-full">
+                            <button type="submit"
+                                class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2  w-full px-4 rounded transition">Actualizar
+                                Estado</button>
                         </div>
                     </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Lotes Asociados -->
+        <div class="bg-white rounded-lg border border-slate-300 p-6 mt-6" id="batchManagementContainer">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-bold">Lotes Asociados</h3>
+                <div class="flex gap-2">
+                    <button id="moveToSelected"
+                        class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded flex items-center gap-1">
+                        <span>&rarr;</span> Agregar
+                    </button>
+
+                    <button id="updateBatchesBtn"
+                        class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        Guardar Cambios
+                    </button>
+
+                    <button id="moveToAvailable"
+                        class="bg-slate-600 hover:bg-slate-700 text-white font-medium py-2 px-4 rounded flex items-center gap-1">
+                        <span>&larr;</span> Quitar
+                    </button>
+                </div>
+            </div>
+
+            <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6 hidden" id="batchInstructions">
+                <div class="flex items-start gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600 mt-0.5" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
                     <div>
-                        <h4 class="font-medium mb-2">Lotes Seleccionados</h4>
-                        <div class="border border-slate-300 rounded overflow-hidden">
-                            <div class="batch-header grid grid-cols-3 bg-slate-100 p-2 font-medium">
-                                <div>Serial</div>
-                                <div>Producto</div>
-                                <div>Cantidad</div>
+                        <p class="font-medium text-purple-900 mb-1">Instrucciones de uso:</p>
+                        <ul class="list-disc pl-5 text-sm text-purple-800 space-y-1">
+                            <li>Seleccione un lote haciendo clic sobre él</li>
+                            <li>Use doble clic para mover rápidamente un lote entre las listas</li>
+                            <li>Los cambios se guardarán al hacer clic en "Guardar Cambios"</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección para gestionar lotes -->
+            <div id="batchSectionContent">
+                <input type="hidden" id="batchIdsInput" name="batchIds">
+                <input type="hidden" id="movementId" th:value="${movement.id}">
+                <input type="hidden" id="movementStatus" th:value="${movement.status}">
+
+                <div id="batchesLoading" class="flex items-center justify-center py-8 text-slate-500">
+                    <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+                            fill="none"></circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                    Cargando lotes disponibles...
+                </div>
+
+                <div id="batchesContainer" class="hidden">
+                    <div id="selectedBatchesSection" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div id="availableBatchesSection" class="bg-slate-50 rounded-lg p-4">
+                            <h4 class="font-medium text-slate-900 mb-3">Lotes Disponibles</h4>
+                            <div class="bg-white border border-slate-200 rounded-lg overflow-hidden">
+                                <div class="grid grid-cols-3 bg-slate-100 p-3 font-medium text-slate-700">
+                                    <div>Serial</div>
+                                    <div>Producto</div>
+                                    <div>Cantidad</div>
+                                </div>
+                                <div id="availableBatchesList"
+                                    class="batch-list max-h-[400px] overflow-y-auto divide-y divide-slate-100"></div>
                             </div>
-                            <div id="selectedBatchesList" class="batch-list max-h-60 overflow-y-auto p-2"></div>
+                        </div>
+                        <div class="bg-purple-50 rounded-lg p-4">
+                            <h4 id="selectedBatchesTitle" class="font-medium text-slate-900 mb-3">Lotes Seleccionados</h4>
+                            <div class="bg-white border border-slate-200 rounded-lg overflow-hidden">
+                                <div class="grid grid-cols-3 bg-slate-100 p-3 font-medium text-slate-700">
+                                    <div>Serial</div>
+                                    <div>Producto</div>
+                                    <div>Cantidad</div>
+                                </div>
+                                <div id="selectedBatchesList"
+                                    class="batch-list max-h-[400px] overflow-y-auto divide-y divide-slate-100"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                
-                <div class="flex justify-center gap-4 mb-4">
-                    <button id="moveToSelected" class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded">
-                        <span>&rarr;</span> Agregar a Seleccionados
-                    </button>
-                    <button id="moveToAvailable" class="bg-slate-600 hover:bg-slate-700 text-white font-medium py-2 px-4 rounded">
-                        <span>&larr;</span> Quitar de Seleccionados
-                    </button>
-                </div>
-                
-                <div class="flex justify-center">
-                    <button id="updateBatchesBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded">
-                        Guardar Cambios de Lotes
-                    </button>
-                </div>
-                
-                <div class="mt-4 text-sm text-slate-500 bg-slate-50 p-3 rounded">
-                    <p><span class="font-medium">Consejos:</span></p>
-                    <ul class="list-disc pl-5 mt-1">
-                        <li>Haga clic en un lote para seleccionarlo.</li>
-                        <li>Doble clic para mover un lote directamente a la otra lista.</li>
-                        <li>Los cambios no se aplicarán hasta que haga clic en "Guardar Cambios de Lotes".</li>
-                    </ul>
-                </div>
             </div>
         </div>
-        
-       <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-slate-200">
-                <thead class="bg-slate-100">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Serial</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Producto</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Cantidad</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Precio</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-700 uppercase">Vence</th>
-                </tr>
-                </thead>
-                 <!--<tbody class="divide-y divide-slate-200">
-                <tr th:if="${#lists.isEmpty(movement.batches)}">
-                    <td colspan="5" class="px-6 py-4 text-center text-slate-500">No hay lotes asociados a este movimiento</td>
-                </tr>
-                <tr th:each="batch : ${movement.batches}">
-                    <td class="px-6 py-4" th:text="${batch.serialNumber}"></td>
-                    <td class="px-6 py-4" th:text="${batch.product?.name}"></td>
-                    <td class="px-6 py-4" th:text="${batch.amount}"></td>
-                    <td class="px-6 py-4" th:text="${'$' + batch.price}"></td>
-                    <td class="px-6 py-4" th:text="${#dates.format(batch.expirationDate, 'dd/MM/yyyy')}"></td>
-                </tr>
-                </tbody>
-                        -->
-            </table>
-        </div>
     </div>
-</div>
 </body>
-</html> 
+
+</html>
