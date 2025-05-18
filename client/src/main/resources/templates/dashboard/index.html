@@ -97,19 +97,36 @@
                 </div>
             </div>
             
-            <!-- Lotes próximos a vencer -->
+            <!-- Lotes próximos a vencer
             <div class="xl:col-span-2 w-full">
                 <div class="flex flex-col h-full flex-grow w-full">
                     <h3 class="text-xl lg:text-2xl font-bold mb-1">Lotes próximos a vencer</h3>
                     <p class="text-gray-500 pb-4 text-sm">Productos que requieren atención</p>
 
                     <div class="bg-white flex flex-col flex-grow gap-3 p-4 rounded-lg border border-slate-500" id="batches-expiring-soon">
-                        <!-- Lista de lotes próximos a vencer se cargará dinámicamente -->
                     </div>
                 </div>
             </div>
+            -->
+
+            
+            <!-- Empleados activos -->
+            <div class="xl:col-span-2 w-full">
+                <div class="flex flex-col h-full flex-grow w-full">
+                    <div class="flex justify-between items-center mb-1">
+                        <h3 class="text-xl lg:text-2xl font-bold">Personal</h3>
+                        <a href="/dashboard/admin/users" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-4 rounded">
+                            Administrar
+                        </a>
+                    </div>
+                    <p class="text-gray-500 pb-4 text-sm">Operadores y empleados registrados en el sistema</p>
+
+                    <div class="bg-white flex flex-col flex-grow gap-3 p-4 rounded-lg border border-slate-500" id="active-employees">
+                    </div>
+                </div>
+            </div>
+
         </div>
-        
 
     </div>
 </body>
