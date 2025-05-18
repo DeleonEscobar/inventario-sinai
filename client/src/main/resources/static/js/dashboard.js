@@ -69,8 +69,8 @@ async function loadDashboardData() {
         // Actualizar lista de empleados
         const $employeesList = $('#active-employees').empty();
         
-        if (dashboardTools.allEmployees && dashboardTools.allEmployees.length > 0) {
-            $.each(dashboardTools.allEmployees, function(i, employee) {
+        if (dashboardTools.recentUsers && dashboardTools.recentUsers.length > 0) {
+            $.each(dashboardTools.recentUsers, function(i, employee) {
                 // Determinar el tipo de rol
                 let roleName = '';
                 let roleClass = '';
