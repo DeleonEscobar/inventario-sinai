@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layouts/layoutDashboard.html}">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/layoutDashboard.html}">
+
 <head>
     <title>Dashboard Inventario Pan Sinai</title>
 
     <script>const currentUserId = "[[${user.id}]]";</script>
     <script src="/js/dashboard.js" type="module" defer></script>
 </head>
+
 <body>
 
     <div class="w-full md:p-6 md:pt-2" layout:fragment="custom-content">
@@ -15,7 +16,8 @@
             <h3 class="text-xl lg:text-2xl font-bold mb-4">Acceso Rápido</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 <!-- Gestión de Productos -->
-                <a href="./products" class="bg-blue-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
+                <a href="./products"
+                    class="bg-blue-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
                     <div class="flex flex-col items-center">
                         <h4 class="font-bold text-center">Gestionar Productos</h4>
                         <p th:text="${user.name}"></p>
@@ -23,21 +25,24 @@
                 </a>
 
                 <!-- Gestión de Lotes -->
-                <a href="./batches" class="bg-green-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
+                <a href="./batches"
+                    class="bg-green-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
                     <div class="flex flex-col items-center">
                         <h4 class="font-bold text-center">Gestionar Lotes</h4>
                     </div>
                 </a>
 
                 <!-- Movimientos -->
-                <a href="./movements" class="bg-purple-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
+                <a href="./movements"
+                    class="bg-purple-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
                     <div class="flex flex-col items-center">
                         <h4 class="font-bold text-center">Registrar Movimientos</h4>
                     </div>
                 </a>
 
                 <!-- Clientes -->
-                <a href="./clients" class="bg-orange-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
+                <a href="./clients"
+                    class="bg-orange-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
                     <div class="flex flex-col items-center">
                         <h4 class="font-bold text-center">Gestionar Clientes</h4>
                     </div>
@@ -77,12 +82,13 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Historial de Actividades -->
                 <div class="w-full">
                     <div class="flex flex-col h-full">
                         <h3 class="text-xl lg:text-2xl font-bold mb-1">Historial de Actividades</h3>
-                        <p class="text-gray-500 pb-4 text-sm">Movimientos recientes en el inventario (Últimos 7 días)</p>
+                        <p class="text-gray-500 pb-4 text-sm">Movimientos recientes en el inventario (Últimos 7 días)
+                        </p>
                         <div class="bg-white flex-grow p-6 rounded-lg border border-slate-500">
                             <div class="relative pt-4 pb-5 max-h-[26rem] overflow-hidden overflow-y-auto">
                                 <ul class="p-4" id="activities-list">
@@ -90,38 +96,38 @@
                                 </ul>
                             </div>
                             <div class="text-center p-2 mt-2">
-                                <p class="text-slate-400 text-xs">Espere para ver más acciones realizadas por usted o sus empleados</p>
+                                <p class="text-slate-400 text-xs">Espere para ver más acciones realizadas por usted o
+                                    sus empleados</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Lotes próximos a vencer
-            <div class="xl:col-span-2 w-full">
+
+            <!-- Lotes próximos a vencer -->
+            <div class="xl:col-span-2 w-full h-1/2 ">
                 <div class="flex flex-col h-full flex-grow w-full">
                     <h3 class="text-xl lg:text-2xl font-bold mb-1">Lotes próximos a vencer</h3>
                     <p class="text-gray-500 pb-4 text-sm">Productos que requieren atención</p>
 
-                    <div class="bg-white flex flex-col flex-grow gap-3 p-4 rounded-lg border border-slate-500" id="batches-expiring-soon">
+                    <div class="bg-white flex flex-col flex-grow gap-3 p-4 rounded-lg border border-slate-500 overflow-y-auto"
+                        id="batches-expiring-soon">
                     </div>
                 </div>
-            </div>
-            -->
 
-            
-            <!-- Empleados activos -->
-            <div class="xl:col-span-2 w-full">
+                <!-- Empleados activos -->
                 <div class="flex flex-col h-full flex-grow w-full">
-                    <div class="flex justify-between items-center mb-1">
+                    <div class="flex justify-between items-center py-2">
                         <h3 class="text-xl lg:text-2xl font-bold">Personal</h3>
-                        <a href="/dashboard/admin/users" class="w-1/3 text-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded">
+                        <a href="/dashboard/admin/users"
+                            class="w-1/3 text-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded">
                             Administrar
                         </a>
                     </div>
                     <p class="text-gray-500 pb-4 text-sm">Operadores y empleados registrados en el sistema</p>
 
-                    <div class="bg-white flex flex-col flex-grow gap-3 p-4 rounded-lg border border-slate-500" id="active-employees">
+                    <div class="bg-white flex flex-col flex-grow gap-3 p-4 rounded-lg border border-slate-500 overflow-y-auto"
+                        id="active-employees">
                     </div>
                 </div>
             </div>
@@ -130,4 +136,5 @@
 
     </div>
 </body>
+
 </html>
