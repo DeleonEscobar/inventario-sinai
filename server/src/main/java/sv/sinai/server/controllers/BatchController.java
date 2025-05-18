@@ -79,4 +79,11 @@ public class BatchController {
         response.put("message", "Batch deleted successfully");
         return ResponseEntity.ok(response);
     }
+
+    // Available batches
+    @GetMapping("/available")
+    public ResponseEntity<List<Batch>> getAvailableBatches() {
+        return ResponseEntity.ok(batchService.getAvailableBatches());
+    }
+
 }

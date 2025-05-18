@@ -17,4 +17,8 @@ public interface IBatchRepository extends JpaRepository<Batch, Integer> {
     List<Batch> findAllByProductId(Integer productId);
 
     List<Batch> findTop5ByExpirationDateBetweenOrderByExpirationDateAsc(Instant start, Instant end);
+
+    // Get all batches that are not associated with any movement
+    @Query("SELECT b FROM Batch b WHERE b.id NOT IN (SELECT mb.batch.id FROM MovementBatch mb)")
+    List<Batch> findAllByMovementIdIsNull();
 }

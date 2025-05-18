@@ -67,4 +67,9 @@ public class BatchService {
     public void deleteBatch(Integer id) {
         batchRepository.deleteById(id);
     }
+
+    // Get available batches
+    public List<Batch> getAvailableBatches() {
+        return batchRepository.findAllByMovementIdIsNull();
+    }
 }
