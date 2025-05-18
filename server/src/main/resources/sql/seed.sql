@@ -51,7 +51,7 @@ VALUES ('Super Selectos Escalón', 'Colonia Escalón, San Salvador', NOW()),
 INSERT INTO `movement` (`notes`, `type`, `status`, `clientId`, `createdByUserId`, `responsibleUserId`, `createdAt`)
 VALUES ('Entrega semanal de pan dulce', 1, 1, 1, 1, 2, NOW()),
        ('Reposición urgente de pan francés', 1, 1, 2, 1, 2, NOW()),
-       ('Nuevo lote de pan de coco', 2, 1, NULL, 1, 3, NOW()),
+       ('Nuevo lote de pan de coco', 2, 1, 2, 1, 2, NOW()),
        ('Entrega de semitas de piña', 1, 1, 3, 1, 3, NOW()),
        ('Despacho a cafetería', 1, 1, 5, 1, 4, NOW());
 
