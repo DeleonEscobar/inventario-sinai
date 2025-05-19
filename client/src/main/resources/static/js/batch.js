@@ -117,6 +117,7 @@ function renderBatches(batches) {
             actionButtons = `<button class="edit-btn text-green-600 hover:underline mr-2" data-id="${batch.id}">Editar</button>`;
         } else {
             actionButtons = `
+                <button class="clone-btn text-violet-600 hover:underline mr-2" data-id="${batch.id}">Duplicar</button>
                 <button class="edit-btn text-green-600 hover:underline mr-2" data-id="${batch.id}">Editar</button>
                 <button class="delete-btn text-red-600 hover:underline" data-id="${batch.id}">Eliminar</button>
                 <button class="goto-product-btn text-blue-600 hover:underline ml-2" 
@@ -144,6 +145,28 @@ function renderBatches(batches) {
 }
 
 function assignButtonEvents() {
+    $('.clone-btn').off('click').on('click', async function() {
+        const id = $(this).data('id');
+        const userToken = await getTokenRequest();
+
+        try {
+            if (!userToken) {
+                alert('Error de autenticación');
+                return;
+            }
+
+            await $.ajax({
+                url: `${apiEndpoint}/${id}/duplicate`,
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${userToken}` }
+            });
+
+            fetchBatches();
+        } catch (err) {
+            alert('No se pudo cargar la información del lote');
+        }
+    })
+
     $('.edit-btn').off('click').on('click', async function() {
         try {
             const id = $(this).data('id');

@@ -51,6 +51,23 @@ public class BatchService {
         return batchRepository.save(batch);
     }
 
+    // Duplicate batch
+    public Batch duplicateBatch(Integer id) {
+        return batchRepository.findById(id)
+                .map(batch -> {
+                    Batch newBatch = new Batch();
+                    newBatch.setSerialNumber(batch.getSerialNumber());
+                    newBatch.setProduct(batch.getProduct());
+                    newBatch.setAmount(batch.getAmount());
+                    newBatch.setExpirationDate(batch.getExpirationDate());
+                    newBatch.setPrice(batch.getPrice());
+                    newBatch.setCreatedAt(null);
+                    newBatch.setUpdatedAt(null);
+                    return batchRepository.save(newBatch);
+                })
+                .orElse(null);
+    }
+
     // Update batch
     public Optional<Batch> updateBatch(Integer id, Batch batchDetails) {
         return batchRepository.findById(id)

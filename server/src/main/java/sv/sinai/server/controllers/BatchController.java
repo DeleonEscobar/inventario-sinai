@@ -60,6 +60,12 @@ public class BatchController {
         return ResponseEntity.ok(batchService.createBatch(batch));
     }
 
+    // Duplicate batch
+    @PostMapping("/{id}/duplicate")
+    public ResponseEntity<Batch> duplicateBatch(@PathVariable Integer id) {
+        return ResponseEntity.ok(batchService.duplicateBatch(id));
+    }
+
     // Update batch
     @PutMapping("/{id}")
     public ResponseEntity<Batch> updateBatch(@PathVariable Integer id, @Valid @RequestBody Batch batchDetails) {
