@@ -2,6 +2,8 @@ package sv.sinai.server.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sv.sinai.server.entities.Batch;
+import sv.sinai.server.entities.Movement;
 import sv.sinai.server.entities.MovementBatch;
 import sv.sinai.server.repositories.IMovementBatchRepository;
 
@@ -33,6 +35,27 @@ public class MovementBatchService {
         return movementBatchRepository.save(movementBatch);
     }
 
+    // Add multiple batches to a single movement
+    public boolean addMultipleBatchesToMovement(Integer movementId, List<Integer> batchIds) {
+        try {
+            for (Integer batchId : batchIds) {
+                Movement movement = new Movement();
+                movement.setId(movementId);
+
+                Batch batch = new Batch();
+                batch.setId(batchId);
+
+                MovementBatch movementBatch = new MovementBatch();
+                movementBatch.setMovement(movement);
+                movementBatch.setBatch(batch);
+                movementBatchRepository.save(movementBatch);
+            }
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     // Update movement batch
     public Optional<MovementBatch> updateMovementBatch(Integer id, MovementBatch movementBatchDetails) {
         return movementBatchRepository.findById(id)
@@ -46,5 +69,18 @@ public class MovementBatchService {
     // Delete movement batch
     public void deleteMovementBatch(Integer id) {
         movementBatchRepository.deleteById(id);
+    }
+
+    // Remove multiple batches from a single movement
+    public boolean removeMultipleBatchesFromMovement(Integer movementId, List<Integer> batchIds) {
+        try {
+            for (Integer batchId : batchIds) {
+                movementBatchRepository.deleteByMovementIdAndBatchId(movementId, batchId);
+            }
+
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

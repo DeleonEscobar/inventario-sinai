@@ -6,9 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sv.sinai.server.entities.Client;
 import sv.sinai.server.entities.Movement;
+import sv.sinai.server.entities.MovementBatch;
 import sv.sinai.server.entities.beans.MovementRequest;
 import sv.sinai.server.entities.dto.MovementDTO;
 import sv.sinai.server.entities.dto.UserDTO;
+import sv.sinai.server.services.BatchService;
+import sv.sinai.server.services.MovementBatchService;
 import sv.sinai.server.services.MovementService;
 import sv.sinai.server.services.UserService;
 import sv.sinai.server.utils.exceptions.ResourceNotFoundException;
@@ -23,11 +26,15 @@ import java.util.Objects;
 public class MovementController {
     private final MovementService movementService;
     private final UserService userService;
+    private final BatchService batchService;
+    private final MovementBatchService movementBatchService;
 
     @Autowired
-    public MovementController(MovementService movementService, UserService userService) {
+    public MovementController(MovementService movementService, UserService userService, BatchService batchService, MovementBatchService movementBatchService) {
         this.movementService = movementService;
         this.userService = userService;
+        this.batchService = batchService;
+        this.movementBatchService = movementBatchService;
     }
 
     // Get all movements
@@ -123,6 +130,16 @@ public class MovementController {
                 .orElseThrow(() -> new ResourceNotFoundException("Movement with id '" + id + "' not found")));
     }
 
+    // Assign a batch to a movement
+    @PostMapping("/{id}/assign-batches")
+    public boolean assignBatchToMovement(@PathVariable Integer id, @RequestBody List<Integer> batchIds) {
+        if (movementService.getMovementById(id).isEmpty()) {
+            throw new ResourceNotFoundException("Movement with id '" + id + "' not found");
+        }
+
+        return movementBatchService.addMultipleBatchesToMovement(id, batchIds);
+    }
+
     // Delete movement
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deleteMovement(@PathVariable Integer id) {
@@ -134,5 +151,15 @@ public class MovementController {
         Map<String, String> response = new HashMap<>();
         response.put("message", "Movement and their batch relations deleted successfully");
         return ResponseEntity.ok(response);
+    }
+
+    // Remove a batch from a movement
+    @DeleteMapping("/{id}/remove-batches")
+    public boolean removeBatchFromMovement(@PathVariable Integer id, @RequestBody List<Integer> batchIds) {
+        if (movementService.getMovementById(id).isEmpty()) {
+            throw new ResourceNotFoundException("Movement with id '" + id + "' not found");
+        }
+
+        return movementBatchService.removeMultipleBatchesFromMovement(id, batchIds);
     }
 }

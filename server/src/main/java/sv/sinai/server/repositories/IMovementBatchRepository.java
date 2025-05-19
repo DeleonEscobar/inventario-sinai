@@ -19,6 +19,11 @@ public interface IMovementBatchRepository extends JpaRepository<MovementBatch, I
     Optional<List<MovementBatch>> findByMovementId(Integer movementId);
     Optional<List<MovementBatch>> findAllByBatchIdAndMovementId(Integer batchId, Integer movementId);
 
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM MovementBatch mb WHERE mb.movement.id = :movementId AND mb.batch.id = :batchId")
+    int deleteByMovementIdAndBatchId(@Param("movementId") Integer movementId, @Param("batchId") Integer batchId);
+
     @Query("""
         SELECT mb
         FROM MovementBatch mb

@@ -512,27 +512,51 @@ public class MovementsController extends BaseController {
                 response.put("message", "No tienes permiso para actualizar este movimiento");
                 return response;
             }
+
+            // Obtener los lotes actuales del movimiento
+            List<Integer> currentBatchIds = new ArrayList<>();
+            if (movement.getBatches() != null) {
+                movement.getBatches().forEach(batch -> currentBatchIds.add((batch.getId().intValue())));
+            }
             
             // Convertir string de IDs de lotes a lista de enteros
-            List<Integer> batchesList = new ArrayList<>();
+            List<Integer> newBatchIds = new ArrayList<>();
             if (batchIds != null && !batchIds.isEmpty()) {
                 String[] batchIdArray = batchIds.split(",");
                 for (String batchId : batchIdArray) {
-                    batchesList.add(Integer.parseInt(batchId));
+                    newBatchIds.add(Integer.parseInt(batchId));
                 }
             }
-            
-            // Enviar la actualización de lotes al API
-            HttpEntity<List<Integer>> updateEntity = new HttpEntity<>(batchesList, headers);
-            restTemplate.exchange(
-                    BASE_URL + "/movements/" + id + "/batches",
-                    HttpMethod.PUT,
-                    updateEntity,
-                    Void.class);
-            
+
+            // Determinar lotes a agregar (los que están en newBatchIds pero no en currentBatchIds)
+            List<Integer> batchesToAdd = new ArrayList<>(newBatchIds);
+            batchesToAdd.removeAll(currentBatchIds);
+
+            // Determinar lotes a eliminar (los que están en currentBatchIds pero no en newBatchIds)
+            List<Integer> batchesToRemove = new ArrayList<>(currentBatchIds);
+            batchesToRemove.removeAll(newBatchIds);
+
+            // Realizar operaciones solo si hay cambios
+            if (!batchesToAdd.isEmpty()) {
+                HttpEntity<List<Integer>> addEntity = new HttpEntity<>(batchesToAdd, headers);
+                restTemplate.exchange(
+                        BASE_URL + "/movements/" + id + "/assign-batches",
+                        HttpMethod.POST,
+                        addEntity,
+                        Boolean.class);
+            }
+
+            if (!batchesToRemove.isEmpty()) {
+                HttpEntity<List<Integer>> removeEntity = new HttpEntity<>(batchesToRemove, headers);
+                restTemplate.exchange(
+                        BASE_URL + "/movements/" + id + "/remove-batches",
+                        HttpMethod.DELETE,
+                        removeEntity,
+                        Boolean.class);
+            }
+
             response.put("success", true);
             response.put("message", "Lotes actualizados correctamente");
-            
         } catch (Exception e) {
             logger.error("Error al actualizar los lotes del movimiento", e);
             response.put("success", false);
