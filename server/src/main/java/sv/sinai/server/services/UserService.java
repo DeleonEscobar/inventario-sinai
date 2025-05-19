@@ -9,6 +9,7 @@ import sv.sinai.server.repositories.IUserRepository;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -113,6 +114,35 @@ public class UserService {
                     user.setName(userDetails.getName());
                     user.setDui(userDetails.getDui());
                     user.setRole(userDetails.getRole());
+                    return userRepository.save(user);
+                })
+                .map(updatedUser -> new UserDTO(
+                        updatedUser.getId(),
+                        updatedUser.getUsername(),
+                        updatedUser.getName(),
+                        updatedUser.getDui(),
+                        updatedUser.getRole(),
+                        updatedUser.getCreatedAt(),
+                        updatedUser.getUpdatedAt()));
+    }
+
+    // Patch user
+    public Optional<UserDTO> patchUser(Integer id, Map<String, Object> updates) {
+        return userRepository.findById(id)
+                .map(user -> {
+                    if (updates.containsKey("username")) {
+                        user.setUsername((String) updates.get("username"));
+                    }
+                    if (updates.containsKey("name")) {
+                        user.setName((String) updates.get("name"));
+                    }
+                    if (updates.containsKey("dui")) {
+                        user.setDui((String) updates.get("dui"));
+                    }
+                    if (updates.containsKey("role")) {
+                        user.setRole((Integer) updates.get("role"));
+                    }
+                    user.setUpdatedAt(Instant.now());
                     return userRepository.save(user);
                 })
                 .map(updatedUser -> new UserDTO(

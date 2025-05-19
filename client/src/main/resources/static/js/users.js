@@ -186,7 +186,7 @@ $('#user-form').on('submit', async function(e) {
         
         await $.ajax({
             url: editing && id ? `${apiEndpoint}/${id}` : apiEndpoint,
-            method: editing && id ? 'PUT' : 'POST',
+            method: editing && id ? 'PATCH' : 'POST',
             headers: { 'Authorization': `Bearer ${userToken}` },
             contentType: 'application/json',
             data: JSON.stringify(user)

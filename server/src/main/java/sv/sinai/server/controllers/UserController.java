@@ -76,6 +76,13 @@ public class UserController {
                 .orElseThrow(() -> new ResourceNotFoundException("User with id '" + id + "' not found")));
     }
 
+    // Patch user
+    @PatchMapping("/{id}")
+    public ResponseEntity<UserDTO> patchUser(@PathVariable Integer id, @RequestBody Map<String, Object> updates) {
+        return ResponseEntity.ok(userService.patchUser(id, updates)
+                .orElseThrow(() -> new ResourceNotFoundException("User with id '" + id + "' not found")));
+    }
+
     // Delete user
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, String>> deleteUser(@PathVariable Integer id) {
