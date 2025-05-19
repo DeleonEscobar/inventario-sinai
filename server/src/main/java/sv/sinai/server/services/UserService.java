@@ -136,6 +136,9 @@ public class UserService {
                     if (updates.containsKey("name")) {
                         user.setName((String) updates.get("name"));
                     }
+                    if (updates.containsKey("password")) {
+                        user.setPassword(passwordEncoder.encode((String) updates.get("password")));
+                    }
                     if (updates.containsKey("dui")) {
                         user.setDui((String) updates.get("dui"));
                     }
