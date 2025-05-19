@@ -55,9 +55,11 @@ public class MovementsController extends BaseController {
     @PreAuthorize("hasAnyAuthority('ACCESS_ADMIN', 'ACCESS_EMPLOYEE_DASHBOARD')")
     public String movements(HttpSession session, Model model) {
         User user = getSessionUser(session);
+        String token = getTokenFromSession(session);
         boolean isAdmin = user.getRoleId() == 1;
         
         model.addAttribute("user", user);
+        model.addAttribute("token", token);
         model.addAttribute("pageTitle", isAdmin ? "Gestión de Movimientos" : "Movimientos Asignados");
         model.addAttribute("activePage", "movements");
         
@@ -65,7 +67,6 @@ public class MovementsController extends BaseController {
             model.addAttribute("route", "employee");
         }
 
-        String token = getTokenFromSession(session);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + token);
         HttpEntity<String> entity = new HttpEntity<>(headers);
