@@ -224,6 +224,41 @@ function assignButtonEvents() {
 
 // Event Handlers
 $('#btn-add-batch').on('click', () => openModal(false));
+$('#btn-generate-report-all').on('click', async () => {
+    try {
+        const userToken = await getTokenRequest();
+        if (!userToken) {
+            alert('Error de autenticación');
+            return;
+        }
+
+        const response = await fetch('http://localhost:8081/api/reports/batches', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${userToken}`
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Error al generar el reporte');
+        }
+
+        const blob = await response.blob();
+        const blobURL = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobURL;
+        a.download = 'batches-report.pdf';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(blobURL);
+    } catch (err) {
+        console.error('Error al generar el reporte de lotes:', err);
+        alert('Hubo un problema al generar el reporte.');
+    }
+});
+
+
 $('#close-modal, #cancel-modal').on('click', closeModal);
 $(window).on('click', (e) => {
     if (e.target === $('#batch-modal')[0]) closeModal();
