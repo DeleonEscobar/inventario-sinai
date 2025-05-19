@@ -60,12 +60,12 @@
                     <th:block th:if="${user.getRoleId() == 1}">
                         <a th:href="@{'/dashboard/admin/movements/' + ${movement.id}}" class="text-purple-600 hover:underline mr-2">Ver</a>
                         <a th:href="@{'/dashboard/admin/movements/' + ${movement.id} + '/edit'}" class="text-blue-600 hover:underline">Editar</a>
-                        <a href="javascript:void(0)" th:attr="data-id=${movement.id}" th:onclick="'downloadMovementReport(' + ${movement.id} + ')'" class="text-red-600 hover:underline">Descargar</a>
+                        <a href="javascript:void(0)" th:attr="data-id=${movement.id}" th:onclick="'downloadMovementReport(' + ${movement.id} + ')'" class="text-green-600 hover:underline">Descargar</a>
                     </th:block>
 
                     <th:block th:if="${user.getRoleId() == 2}">
                         <a th:href="@{'/dashboard/employee/movements/' + ${movement.id}}" class="text-purple-600 hover:underline">Editar</a>
-                        <a href="javascript:void(0)" th:attr="data-id=${movement.id}" th:onclick="'downloadMovementReport(' + ${movement.id} + ')'" class="text-red-600 hover:underline">Descargar</a>
+                        <a href="javascript:void(0)" th:attr="data-id=${movement.id}" th:onclick="'downloadMovementReport(' + ${movement.id} + ')'" class="text-green-600 hover:underline">Descargar</a>
                     </th:block>
 
                 </td>
