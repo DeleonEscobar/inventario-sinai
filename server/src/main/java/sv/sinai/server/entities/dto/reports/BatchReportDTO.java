@@ -12,6 +12,9 @@ public class BatchReportDTO {
     private String serialNumber;
     private BigDecimal amount;
 
+    public BatchReportDTO() {
+    }
+
     public BatchReportDTO(String productName, Integer quantity, BigDecimal price, Instant expirationDate, String serialNumber, BigDecimal amount) {
         this.productName = productName;
         this.quantity = quantity;

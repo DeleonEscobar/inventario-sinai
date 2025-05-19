@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import sv.sinai.server.entities.Batch;
+import sv.sinai.server.entities.dto.reports.BatchReportDTO;
 import sv.sinai.server.entities.dto.reports.MovementReportDTO;
 import sv.sinai.server.repositories.IMovementBatchRepository;
 import sv.sinai.server.repositories.IMovementRepository;
@@ -13,6 +14,7 @@ import sv.sinai.server.services.BatchService;
 import sv.sinai.server.services.MovementService;
 
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +50,26 @@ public class ReportService {
             params.put("TOTAL_AMOUNT", mv.getTotalAmount());
             params.put("LOGO", resourceLoader.getResource("classpath:img/logo.png").getInputStream());
 
-            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(mv.getBatches());
+            // Si no hay batches, creamos un DTO "dummy" con el mensaje
+            JRBeanCollectionDataSource dataSource;
+            if (mv.getBatches().isEmpty()) {
+                List<BatchReportDTO> dummyList = new ArrayList<>();
+
+                // Crear un objeto BatchReportDTO con valores nulos excepto productName
+                BatchReportDTO dummyBatch = new BatchReportDTO();
+                dummyBatch.setProductName("No hay lotes asignados para este movimiento");
+                dummyBatch.setQuantity(null);
+                dummyBatch.setPrice(null);
+                dummyBatch.setExpirationDate(null);
+                dummyBatch.setSerialNumber(null);
+                dummyBatch.setAmount(null);
+
+                dummyList.add(dummyBatch);
+                dataSource = new JRBeanCollectionDataSource(dummyList);
+            } else {
+                dataSource = new JRBeanCollectionDataSource(mv.getBatches());
+            }
+
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, params, dataSource);
             return JasperExportManager.exportReportToPdf(jasperPrint);
         } catch (Exception e) {

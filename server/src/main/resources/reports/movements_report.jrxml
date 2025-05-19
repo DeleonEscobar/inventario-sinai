@@ -31,6 +31,7 @@
     <parameter name="RESPONSIBLE" class="java.lang.String"/>
     <parameter name="TOTAL_AMOUNT" class="java.math.BigDecimal"/>
     <parameter name="LOGO" class="java.io.InputStream"/>
+    <parameter name="EMPTY_DATA" class="java.lang.Boolean"/>
 
     <!-- Campos de cada batch -->
     <field name="productName" class="java.lang.String"/>
@@ -183,7 +184,7 @@
                 <textElement>
                     <font size="14"/>
                 </textElement>
-                <text><![CDATA[Detalle de Productos]]></text>
+                <text><![CDATA[Detalle de Lotes]]></text>
             </staticText>
             <line>
                 <reportElement x="0" y="29" width="555" height="1"/>
@@ -265,8 +266,22 @@
                 </graphicElement>
             </rectangle>
 
+            <!-- Mensaje especial cuando no hay lotes (ocupa todo el ancho) -->
             <textField textAdjust="StretchHeight">
-                <reportElement x="0" y="0" width="140" height="25" style="DetailRow"/>
+                <reportElement x="0" y="0" width="555" height="25" style="DetailRow">
+                    <printWhenExpression><![CDATA[$F{quantity} == null || $F{quantity} <= 0]]></printWhenExpression>
+                </reportElement>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="12" isBold="true"/>
+                </textElement>
+                <textFieldExpression><![CDATA[$F{productName}]]></textFieldExpression>
+            </textField>
+
+            <!-- Campos normales para cuando hay lotes -->
+            <textField textAdjust="StretchHeight">
+                <reportElement x="0" y="0" width="140" height="25" style="DetailRow">
+                    <printWhenExpression><![CDATA[$F{quantity} != null]]></printWhenExpression>
+                </reportElement>
                 <textElement verticalAlignment="Middle">
                     <paragraph leftIndent="5"/>
                 </textElement>
@@ -274,33 +289,43 @@
             </textField>
 
             <textField>
-                <reportElement x="140" y="0" width="70" height="25" style="DetailRow"/>
+                <reportElement x="140" y="0" width="70" height="25" style="DetailRow">
+                    <printWhenExpression><![CDATA[$F{quantity} != null]]></printWhenExpression>
+                </reportElement>
                 <textElement textAlignment="Center" verticalAlignment="Middle"/>
                 <textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
             </textField>
 
             <textField pattern="#,##0.00">
-                <reportElement x="210" y="0" width="80" height="25" style="DetailRow"/>
+                <reportElement x="210" y="0" width="80" height="25" style="DetailRow">
+                    <printWhenExpression><![CDATA[$F{quantity} != null]]></printWhenExpression>
+                </reportElement>
                 <textElement textAlignment="Center" verticalAlignment="Middle"/>
                 <textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
             </textField>
 
             <textField>
-                <reportElement x="290" y="0" width="90" height="25" style="DetailRow"/>
+                <reportElement x="290" y="0" width="90" height="25" style="DetailRow">
+                    <printWhenExpression><![CDATA[$F{quantity} != null]]></printWhenExpression>
+                </reportElement>
                 <textElement textAlignment="Center" verticalAlignment="Middle"/>
                 <textFieldExpression><![CDATA[$F{expirationDate} != null ?
-                    new java.text.SimpleDateFormat("dd/MM/yyyy").format(java.util.Date.from($F{expirationDate})) :
-                    "N/A"]]></textFieldExpression>
+                new java.text.SimpleDateFormat("dd/MM/yyyy").format(java.util.Date.from($F{expirationDate})) :
+                "N/A"]]></textFieldExpression>
             </textField>
 
             <textField textAdjust="StretchHeight">
-                <reportElement x="380" y="0" width="100" height="25" style="DetailRow"/>
+                <reportElement x="380" y="0" width="100" height="25" style="DetailRow">
+                    <printWhenExpression><![CDATA[$F{quantity} != null]]></printWhenExpression>
+                </reportElement>
                 <textElement textAlignment="Center" verticalAlignment="Middle"/>
                 <textFieldExpression><![CDATA[$F{serialNumber}]]></textFieldExpression>
             </textField>
 
             <textField pattern="#,##0.00">
-                <reportElement x="480" y="0" width="75" height="25" style="DetailRow"/>
+                <reportElement x="480" y="0" width="75" height="25" style="DetailRow">
+                    <printWhenExpression><![CDATA[$F{quantity} != null]]></printWhenExpression>
+                </reportElement>
                 <textElement textAlignment="Right" verticalAlignment="Middle">
                     <paragraph rightIndent="5"/>
                 </textElement>
