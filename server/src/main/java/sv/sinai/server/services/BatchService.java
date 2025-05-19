@@ -4,18 +4,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sv.sinai.server.entities.Batch;
 import sv.sinai.server.repositories.IBatchRepository;
+import sv.sinai.server.repositories.IMovementBatchRepository;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class BatchService {
     private final IBatchRepository batchRepository;
+    private final IMovementBatchRepository movementBatchRepository;
 
     @Autowired
-    public BatchService(IBatchRepository batchRepository) {
+    public BatchService(IBatchRepository batchRepository, IMovementBatchRepository movementBatchRepository) {
         this.batchRepository = batchRepository;
+        this.movementBatchRepository = movementBatchRepository;
     }
 
     // Get all batches
@@ -65,6 +67,10 @@ public class BatchService {
 
     // Delete batch
     public void deleteBatch(Integer id) {
+        // Eliminar las relaciones de movimiento-lote
+        movementBatchRepository.deleteByBatchId(id);
+
+        // Eliminar el lote
         batchRepository.deleteById(id);
     }
 

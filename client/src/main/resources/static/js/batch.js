@@ -168,7 +168,7 @@ function assignButtonEvents() {
     $('.delete-btn').off('click').on('click', async function() {
         const id = $(this).data('id');
         
-        if (!confirm('¿Seguro que deseas eliminar este lote?')) return;
+        if (!confirm('¿Seguro que deseas eliminar este lote?\nEsta acción se puede revertir y puede afectar a registros de movimientos ya existentes.')) return;
         
         try {
             const userToken = await getTokenRequest();
