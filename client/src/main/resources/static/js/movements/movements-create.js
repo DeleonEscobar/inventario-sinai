@@ -219,6 +219,14 @@ $(document).ready(function() {
         if (!notes) {
             alert('Por favor ingrese una nota para el movimiento.');
             return false;
+        } else if (notes.length > 255) {
+            alert('La nota no puede exceder los 255 caracteres.');
+            return false;
+        }
+
+        if (selectedBatchIds.size === 0) {
+            alert('Por favor seleccione al menos un lote.');
+            return false;
         }
         
         return true;

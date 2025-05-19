@@ -28,10 +28,7 @@ import sv.sinai.client.models.Movement;
 import sv.sinai.client.models.Client;
 import sv.sinai.client.models.Batch;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/dashboard")
@@ -414,6 +411,12 @@ public class MovementsController extends BaseController {
             @RequestParam("status") Integer status,
             HttpSession session,
             RedirectAttributes redirectAttributes) {
+
+        if (notes != null && notes.length() > 255) {
+            redirectAttributes.addFlashAttribute("error", "Trata de ingresar una nota más corta (máx. 255 caracteres)");
+            return "redirect:/dashboard/admin/movements/" + id + "/edit";
+        }
+
         try {
             String token = getTokenFromSession(session);
             HttpHeaders headers = new HttpHeaders();
@@ -433,15 +436,13 @@ public class MovementsController extends BaseController {
 
             HttpEntity<Movement> requestEntity = new HttpEntity<>(movement, headers);
 
-            ResponseEntity<Movement> response = restTemplate.exchange(
+            restTemplate.exchange(
                     BASE_URL + "/movements/" + id,
                     HttpMethod.PUT,
                     requestEntity,
                     Movement.class);
 
-            redirectAttributes.addFlashAttribute("success", "Movimiento actualizado correctamente");
             return "redirect:/dashboard/admin/movements/" + id;
-
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Error al actualizar el movimiento: " + e.getMessage());
             return "redirect:/dashboard/admin/movements/" + id;

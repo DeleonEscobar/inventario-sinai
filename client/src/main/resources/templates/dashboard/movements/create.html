@@ -15,7 +15,10 @@
         <span class="block sm:inline" th:text="${success}"></span>
     </div>
 
-    <div th:if="${error}" class="text-xl font-bold text-red-500 text-center my-3" th:text="${error}"></div>
+    <div th:if="${error}" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+         role="alert">
+        <span class="block sm:inline" th:text="${error}"></span>
+    </div>
 
     <!-- Disclaimer principal -->
     <div class="bg-amber-100 border border-amber-200 border-l-4 border-l-amber-500 p-4 mb-6 rounded-md text-amber-700">
@@ -90,7 +93,7 @@
                     Sin embargo, como gerente, puedes visualizar y asignar los lotes si es necesario.
                 </div>
 
-                <div id="batchSectionContent" class="hidden">
+                <div id="batchSectionContent">
                   
                     <div id="batchesLoading" class="text-center py-4 text-slate-500">
                         Cargando lotes disponibles...
