@@ -20,7 +20,6 @@
                     class="bg-blue-100 p-6 rounded-lg border border-slate-500 hover:shadow-lg transition-all cursor-pointer">
                     <div class="flex flex-col items-center">
                         <h4 class="font-bold text-center">Gestionar Productos</h4>
-                        <p th:text="${user.name}"></p>
                     </div>
                 </a>
 
@@ -90,7 +89,7 @@
                         <p class="text-gray-500 pb-4 text-sm">Movimientos recientes en el inventario (Últimos 7 días)
                         </p>
                         <div class="bg-white flex-grow p-6 rounded-lg border border-slate-500">
-                            <div class="relative pt-4 pb-5  lg:min-h-[20rem] max-h-[26rem] overflow-hidden overflow-y-auto">
+                            <div class="relative pt-4 pb-5 lg:min-h-[27rem] max-h-[17rem] overflow-hidden overflow-y-auto">
                                 <ul class="p-4" id="activities-list">
                                     <!-- Lista de actividades se cargará dinámicamente -->
                                 </ul>
