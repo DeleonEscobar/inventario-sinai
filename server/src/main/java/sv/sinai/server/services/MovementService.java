@@ -156,9 +156,10 @@ public class MovementService {
         report.setCreatedAt(mov.getCreatedAt());
         report.setNotes(mov.getNotes());
         report.setStatus(switch (mov.getStatus()) {
-            case 1 -> "Solicitado";
-            case 2 -> "Completado";
-            case 3 -> "Cancelado";
+            case 1 -> "Pendiente";
+            case 2 -> "En proceso";
+            case 3 -> "Completado";
+            case 4 -> "Cancelado";
             default -> "Desconocido";
         });
         report.setType(mov.getType() == 1 ? "Entrada" : "Salida");
