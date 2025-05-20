@@ -6,7 +6,7 @@ VALUES ('admin', '$2y$10$EkCyKANTqo6wLYouGU0OsuglSlafKmmim5E8zpizAGWyexvt2/EAy',
         NOW()),
        ('operator2', '$2y$10$3rLd3JMnr3.U9jypBySQx.sRHxcO1Q6lkM2G8LK9giJxtZiRP1TKa', 'José Ramírez', '06789123-9', 2,
         NOW()),
-       ('bodeguero1', '$2y$10$Um8vnS9wMWScSV6m9onVbeUJ7EicamKbjHFTRlDmTAjTCY31.PuHe', 'Luis Vásquez', '05432198-7', 3,
+       ('bodeguero1', '$2y$10$Um8vnS9wMWScSV6m9onVbeUJ7EicamKbjHFTRlDmTAjTCY31.PuHe', 'Luis Vásquez', '05432198-7', 2,
         NOW());
 
 -- Almacenes
