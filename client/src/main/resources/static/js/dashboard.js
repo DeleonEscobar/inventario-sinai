@@ -3,7 +3,7 @@ import { getTokenRequest } from '/js/utils/getTokenRequest.js';
 $(document).ready(function() {
     loadDashboardData();
     // Actualizar datos cada 1 minuto
-    setInterval(loadDashboardData, 1 * 60 * 1000);
+    setInterval(loadDashboardData, 5000);
 });
 
 async function loadDashboardData() {
