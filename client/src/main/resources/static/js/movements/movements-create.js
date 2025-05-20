@@ -224,11 +224,6 @@ $(document).ready(function() {
             return false;
         }
 
-        if (selectedBatchIds.size === 0) {
-            alert('Por favor seleccione al menos un lote.');
-            return false;
-        }
-        
         return true;
     };
 }); 
